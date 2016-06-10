@@ -5,6 +5,7 @@
 node_modules/
 bower_components/
 dist/
+.publish/
 scss/build.scss
 img/icon.png
 *.sublime-project
