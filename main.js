@@ -2,25 +2,25 @@
 
 System.config({
     map: {
-        "signals.js": 'libs/js-signals/dist/signals.min.js'
+        'signals.js': 'libs/js-signals/dist/signals.min.js'
     }
 });
 
-window.addEventListener("load", function() {
-    console.log("Loading");
+window.addEventListener('load', function() {
+    console.log('Loading');
 
     if (window.navigator.standalone == true) {
-        $(".hide-fullscreen").addClass("hide");
+        $('.hide-fullscreen').addClass('hide');
     }
 
     System.import('app').then(function(App) {
-        var vertical_resolution = 524,
+        var V_RES = 524,
 
-            aspect_ratio = 1.775,
+            ASPECT_RATIO = 1.775,
 
-            horizontal_resolution = vertical_resolution * aspect_ratio;
+            H_RES = V_RES * ASPECT_RATIO;
 
-        var app = new App.default(horizontal_resolution, vertical_resolution);
+        var app = new App.default(H_RES, V_RES);
         app.main();
     });
 });
