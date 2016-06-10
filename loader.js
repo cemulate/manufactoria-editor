@@ -421,5 +421,7 @@ export {
 
 export default {
     fromJson,
-    toJson
+    toJson,
+    programToJson,
+    jsonToProgram
 };
