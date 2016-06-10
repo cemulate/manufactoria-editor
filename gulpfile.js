@@ -9,6 +9,7 @@ var runSeq = require('run-sequence');
 var del = require('del');
 var connect = require('gulp-connect');
 var wiredep = require('wiredep').stream;
+var ghPages = require('gulp-gh-pages');
 
 var $ = require('gulp-load-plugins')({camelize: true});
 
@@ -62,6 +63,11 @@ gulp.task('compileApp', function() {
         .pipe(concat('all.js'))
         .pipe(sourceMaps.write('.', {sourceMappingURLPrefix: ''}))
         .pipe(gulp.dest(dir.build));
+});
+
+gulp.task('deploy', function() {
+    return gulp.src('./dist/**/*')
+        .pipe(ghPages());
 });
 
 gulp.task('watchJS', function() {
