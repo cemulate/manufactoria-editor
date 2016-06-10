@@ -70,15 +70,6 @@ export class LevelEditor extends LevelDisplay {
             0    // height
         );
 
-        this.playControls = new PlayControl(
-            this._layer,
-            layout.CONTROL_X,
-            this.height - 68 - layout.MARGIN,
-            68
-        );
-
-        this.playControls.x = layout.CONTROL_X + CONTROL_WIDTH / 2 - this.playControls.width / 2;
-
         this.editor = new Editor(this._layer, this.programView, this.tileControl);
 
         this.programView.drawProgram();
@@ -143,15 +134,6 @@ export class LevelRunner extends LevelDisplay {
         super._createControls();
 
         const CONTROL_WIDTH = this.width - layout.CONTROL_X;
-
-        this.playControls = new PlayControl(
-            this._layer,
-            layout.CONTROL_X,
-            this.height - 68 - layout.MARGIN,
-            68
-        );
-
-        this.playControls.x = layout.CONTROL_X + CONTROL_WIDTH / 2 - this.playControls.width / 2;
 
         this.tapeView = new TapeView(
             this._layer,
