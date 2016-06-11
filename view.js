@@ -471,8 +471,6 @@ export class ProgramView {
               paper = this.paper,
               grid = this.gridView;
 
-        console.log('draw');
-
         if (c.type != 'Empty') {
             let container;
             if (c.type == 'Conveyor') {

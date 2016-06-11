@@ -27,11 +27,22 @@ export class Tape {
         this.changed = new signals.Signal();
     }
 
+    setFromString(s) {
+        for (var c of s) {
+            this.append(symbols[c]);
+        }
+    }
+
+    toString() {
+        var codes = {'red': 'R', 'blue': 'B', 'green': 'G', 'yellow': 'Y'};
+        return this.symbols.map(x => codes[x.symbol]).join('');
+    }
+
     head() {
         if (this.symbols.length > 0) {
             return this.symbols[0];
         } else {
-            return core.EMPTY;
+            return this.symbols.EMPTY;
         }
     }
 
@@ -41,7 +52,7 @@ export class Tape {
             this.changed.dispatch('pop');
             return popped;
         } else {
-            return core.EMPTY;
+            return this.symbols.EMPTY;
         }
     }
 

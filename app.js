@@ -21,108 +21,19 @@ const MARGIN = 10, // Space between elements
       PROGRAM_HEIGHT = PROGRAM_WIDTH,
       CONTROL_X = MARGIN + PROGRAM_WIDTH + MARGIN;
 
+function setViewbox(svgel, x, y, width, height) {
+    svgel.setAttribute('viewBox', [x, y, width, height].join(','));
+}
+
 class App {
     constructor(width, height) {
         this.program = null;
         this.interpreter = null;
+        this.taggle = null;
         this.canvasSize = {
             width: width,
             height: height
         };
-        const jsonForm = $('#json-form');
-        jsonForm.find('button:first').click(this.generateJson.bind(this));
-        jsonForm.find('button:last').click(this.loadFromJson.bind(this));
-        jsonForm.find('input').val('');
-        const manufactoriaForm = $('#manufactoria-form');
-        manufactoriaForm.find('button:first').click(this.generateManufactoria.bind(this));
-        manufactoriaForm.find('button:last').click(this.loadFromManufactoria.bind(this));
-        manufactoriaForm.find('input').val('');
-
-        $("#test-button").click(this.testProgram.bind(this));
-    }
-
-    clearGeneratedAndLoadStrings() {
-        $('#json-form').find('input').val('');
-        $('#manufactoria-form').find('input').val('');
-    }
-
-    loadFromJson() {
-        const jsonForm = $('#json-form'),
-              programString = jsonForm.find('input').val().trim();
-        const prog = loader.jsonToProgram(JSON.parse(programString));
-        if (prog) {
-            this.setToProgram(prog);
-            this.clearGeneratedAndLoadStrings();
-        } else {
-            console.log('Unable to load program string');
-            return null;
-        }
-    }
-
-    loadFromManufactoria() {
-        const manufactoriaForm = $('#manufactoria-form'),
-              programString = manufactoriaForm.find('input').val().trim();
-        const prog = program.readLegacyProgramString(programString);
-        console.log(prog);
-        if (prog) {
-            this.setToProgram(prog);
-            this.clearGeneratedAndLoadStrings();
-        } else {
-            console.log('Unable to load program string');
-            return null;
-        }
-    }
-
-    generateJson() {
-        if (this.program != null) {
-            var json = loader.programToJson(this.program);
-            $('#json-form').find('input').val(JSON.stringify(json));
-        }
-    }
-
-    generateManufactoria() {
-        if (this.program != null) {
-            var str = program.generateLegacyProgramString(this.program);
-            $('#manufactoria-form').find('input').val(str);
-        }
-    }
-
-    setToProgram(prog) {
-        const level = new Level(
-            'Test',
-            prog,
-            [{accept: true, input: new core.Tape(), output: new core.Tape(), limit: 0}]
-        );
-        this.stage.clear();
-        this.stage.push(new LevelEditor(
-                this.paper,
-                0, 0,
-                this.canvasSize.width,
-                this.canvasSize.height,
-                level
-            )
-        );
-        this.program = prog;
-    }
-
-    testProgram() {
-        var text = $("#test-strings").val();
-        var strings = text.split('\n');
-
-        var newStrings = [];
-
-        var runner = new Interpreter();
-        runner.setProgram(this.program);
-
-        for (var s of strings) {
-            var tape = new core.Tape();
-            for (var c of s) {
-                tape.append(core.symbols[c]);
-            }
-
-            runner.setTape(tape);
-            console.log(runner);
-        }
     }
 
     main() {
@@ -148,21 +59,203 @@ class App {
             tempProgram.setEnd(4, 8);
 
             this.setToProgram(tempProgram);
-            this.clearGeneratedAndLoadStrings();
+            this.clearProgramGeneratedAndLoadStrings();
         });
+
+        var jsonForm = $('#json-form');
+        jsonForm.find('button:first').click(() => this.generateJson());
+        jsonForm.find('button:last').click(() => this.loadFromJson());
+        jsonForm.find('input').val('');
+        var manufactoriaForm = $('#manufactoria-form');
+        manufactoriaForm.find('button:first').click(() => this.generateManufactoria());
+        manufactoriaForm.find('button:last').click(() => this.loadFromManufactoria());
+        manufactoriaForm.find('input').val('');
+        var testForm = $('#test-form');
+        testForm.find('button:first').click(() => this.generateTestVector());
+        testForm.find('button:last').click(() => this.loadFromTestVector());
+        testForm.find('input').val('');
+
+        $("#add-test").click(() => this.addTest());
+    }
+
+    clearProgramGeneratedAndLoadStrings() {
+        $('#json-form').find('input').val('');
+        $('#manufactoria-form').find('input').val('');
+    }
+
+    clearTestTags() {
+        $(".test-success").remove();
+        $(".test-failure").remove();
+        $("test-form").find('input').val('');
+    }
+
+    loadFromJson() {
+        const jsonForm = $('#json-form'),
+              programString = jsonForm.find('input').val().trim();
+        const prog = loader.jsonToProgram(JSON.parse(programString));
+        if (prog) {
+            this.setToProgram(prog);
+            this.clearProgramGeneratedAndLoadStrings();
+        } else {
+            console.log('Unable to load program string');
+            return null;
+        }
+    }
+
+    loadFromManufactoria() {
+        const manufactoriaForm = $('#manufactoria-form'),
+              programString = manufactoriaForm.find('input').val().trim();
+        const prog = program.readLegacyProgramString(programString);
+        if (prog) {
+            this.setToProgram(prog);
+            this.clearProgramGeneratedAndLoadStrings();
+        } else {
+            console.log('Unable to load program string');
+            return null;
+        }
+    }
+
+    loadFromTestVector() {
+        var testForm = $('#test-form');
+        var testVectorString = testForm.find('input').val().trim();
+        var strings = testVectorString.split(";");
+        strings.map(x => this.addTest(x));
+    }
+
+    generateJson() {
+        if (this.program != null) {
+            var json = loader.programToJson(this.program);
+            $('#json-form').find('input').val(JSON.stringify(json));
+        }
+    }
+
+    generateManufactoria() {
+        if (this.program != null) {
+            var str = program.generateLegacyProgramString(this.program);
+            $('#manufactoria-form').find('input').val(str);
+        }
+    }
+
+    generateTestVector() {
+        var list = [];
+        $("#test-editor").find("span.test-string").each(function () {
+            list.push($(this).html());
+        });
+        $("#test-form").find("input").val(list.join(";"));
+    }
+
+    setToProgram(prog) {
+        const level = new Level(
+            'Test',
+            prog,
+            [{accept: true, input: new core.Tape(), output: new core.Tape(), limit: 0}]
+        );
+        this.stage.clear();
+        this.stage.push(new LevelEditor(
+                this.paper,
+                0, 0,
+                this.canvasSize.width,
+                this.canvasSize.height,
+                level
+            )
+        );
+        this.program = prog;
+    }
+
+    addTest(t) {
+        var el = $("<span>").prop("contenteditable", true).addClass("test-string");
+
+        console.log(t);
+        if (t != null) {
+            el.html(s);
+        }
+
+        el.keydown(e => {
+            if (e.which == 13) {
+                e.preventDefault();
+                if (e.ctrlKey) {
+                    this.testProgram();
+                } else {
+                    this.parseTests();
+                    this.addTest();
+                }
+                return false;
+            }
+            if (!(e.which >= 37 && e.which <= 40)) {
+                // Wasn't the arrow keys; means it's an edit, clear the test results
+                this.clearTestTags();
+            }
+        });
+        $("#add-test").before(el);
+        $("#add-test").before($("<br>"));
+        el.focus();
+    }
+
+    parseTests() {
+
+        var testVector = [];
+
+        // [string]:[A or R][:][Output tape (optional)];
+
+        var parts = $("#test-editor").find(".test-string");
+        parts.each(function () {
+            var testString = $(this).html().trim();
+            var parts = testString.split(':').map(x => x.trim());
+            testVector.push({
+                string: parts[0],
+                result: parts[1],
+                output: parts.length > 2 ? parts[2] : null,
+                spanElement: this
+            });
+        });
+
+        this.testVector = testVector;
+    }
+
+    testProgram() {
+
+        try {
+            this.parseTests() ;
+        } catch (e) {
+            alert("Invalid test strings");
+            return;
+        }
+
+        this.clearTestTags();
+
+        var runner = new Interpreter();
+        runner.setProgram(this.program);
+
+        for (var t of this.testVector) {
+            var inputTape = new core.Tape();
+            inputTape.setFromString(t.string);
+
+            runner.setTape(inputTape);
+            runner.start();
+            while (runner.running) runner.step();
+            console.log(t, runner.accept);
+
+            var resultMatch = (t.result == "A" && runner.accept) || (t.result == "R" && !runner.accept);
+            var outputMatch = true;
+            if (t.output != null) {
+                var referenceTape = new core.Tape();
+                referenceTape.setFromString(t.output);
+                outputMatch = core.Tape.isEqual(runner.tape, referenceTape);
+            }
+
+            var pass = resultMatch && outputMatch;
+
+            var tag;
+            if (pass) {
+                tag = $("<span>").addClass("test-success").html("PASS");
+                $(t.spanElement).after(tag);
+            } else {
+                tag = $("<span>").addClass("test-failure").html("FAIL");
+                $(t.spanElement).after(tag);
+                if (t.output != null) tag.after($("<span>").addClass("test-failure").html("Ending Tape: " + runner.tape.toString()));
+            }
+        }
     }
 }
 
-function setViewbox(svgel, x, y, width, height) {
-    svgel.setAttribute('viewBox', [
-        x,
-        y,
-        width,
-        height
-    ].join(','));
-}
-
-export default App;    /*
-                        Example hash level:
-                        #{"title":"Sample","tape":["BYRGGYRYRGRRGBYRGYRYRGYRGBRYRRBRBGBBYRBYRBGBRBYRRYRYRGBGGBGRYRRGRRYRYRRYRBRRBYRGGRBYRBRBYRRYRGRRGGRRRGYRBYRRRRRRBYRBBGBBRG"],"program":{"cols":9,"rows":9,"cells":[{"x":2,"y":1,"orientation":"ROT3","type":"Conveyor"},{"x":2,"y":2,"orientation":"ROT3","type":"BranchBR"},{"x":2,"y":3,"orientation":"ROT3","type":"BranchBR"},{"x":2,"y":4,"orientation":"ROT3","type":"BranchGY"},{"x":2,"y":5,"orientation":"ROT3","type":"BranchGY"},{"x":3,"y":1,"orientation":"ROT2","type":"Conveyor"},{"x":3,"y":2,"orientation":"ROT2","type":"BranchBR"},{"x":3,"y":3,"orientation":"ROT2","type":"BranchBR"},{"x":3,"y":4,"orientation":"ROT2","type":"BranchGY"},{"x":3,"y":5,"orientation":"ROT2","type":"BranchGY"},{"x":4,"y":1,"orientation":"ROT1","type":"Conveyor"},{"x":4,"y":2,"orientation":"ROT1","type":"BranchBR"},{"x":4,"y":3,"orientation":"ROT1","type":"BranchBR"},{"x":4,"y":4,"orientation":"ROT1","type":"BranchGY"},{"x":4,"y":5,"orientation":"ROT1","type":"BranchGY"},{"x":5,"y":1,"orientation":"ID","type":"Conveyor"},{"x":5,"y":2,"orientation":"MIR","type":"BranchBR"},{"x":5,"y":3,"orientation":"ID","type":"BranchBR"},{"x":5,"y":4,"orientation":"MIR","type":"BranchGY"},{"x":5,"y":5,"orientation":"ID","type":"BranchGY"}],"start":{"x":4,"y":0,"orientation":"ID"},"end":{"x":4,"y":8,"orientation":"ID"}}}
-                        */
+export default App;

@@ -38,7 +38,6 @@ function init() {
 };
 
 function dispatchKeyEvents(evt) {
-    console.log(evt);
     var data = _.clone(mousePosition),
         what = null,
         key = evt.key || String.fromCharCode(evt.keyCode).toLowerCase();
