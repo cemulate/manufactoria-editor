@@ -55,145 +55,14 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
 
                     this.program = null;
                     this.interpreter = null;
+                    this.taggle = null;
                     this.canvasSize = {
                         width: width,
                         height: height
                     };
-                    var jsonForm = $('#json-form');
-                    jsonForm.find('button:first').click(this.generateJson.bind(this));
-                    jsonForm.find('button:last').click(this.loadFromJson.bind(this));
-                    jsonForm.find('input').val('');
-                    var manufactoriaForm = $('#manufactoria-form');
-                    manufactoriaForm.find('button:first').click(this.generateManufactoria.bind(this));
-                    manufactoriaForm.find('button:last').click(this.loadFromManufactoria.bind(this));
-                    manufactoriaForm.find('input').val('');
-
-                    $("#test-button").click(this.testProgram.bind(this));
                 }
 
                 _createClass(App, [{
-                    key: 'clearGeneratedAndLoadStrings',
-                    value: function clearGeneratedAndLoadStrings() {
-                        $('#json-form').find('input').val('');
-                        $('#manufactoria-form').find('input').val('');
-                    }
-                }, {
-                    key: 'loadFromJson',
-                    value: function loadFromJson() {
-                        var jsonForm = $('#json-form'),
-                            programString = jsonForm.find('input').val().trim();
-                        var prog = loader.jsonToProgram(JSON.parse(programString));
-                        if (prog) {
-                            this.setToProgram(prog);
-                            this.clearGeneratedAndLoadStrings();
-                        } else {
-                            console.log('Unable to load program string');
-                            return null;
-                        }
-                    }
-                }, {
-                    key: 'loadFromManufactoria',
-                    value: function loadFromManufactoria() {
-                        var manufactoriaForm = $('#manufactoria-form'),
-                            programString = manufactoriaForm.find('input').val().trim();
-                        var prog = program.readLegacyProgramString(programString);
-                        console.log(prog);
-                        if (prog) {
-                            this.setToProgram(prog);
-                            this.clearGeneratedAndLoadStrings();
-                        } else {
-                            console.log('Unable to load program string');
-                            return null;
-                        }
-                    }
-                }, {
-                    key: 'generateJson',
-                    value: function generateJson() {
-                        if (this.program != null) {
-                            var json = loader.programToJson(this.program);
-                            $('#json-form').find('input').val(JSON.stringify(json));
-                        }
-                    }
-                }, {
-                    key: 'generateManufactoria',
-                    value: function generateManufactoria() {
-                        if (this.program != null) {
-                            var str = program.generateLegacyProgramString(this.program);
-                            $('#manufactoria-form').find('input').val(str);
-                        }
-                    }
-                }, {
-                    key: 'setToProgram',
-                    value: function setToProgram(prog) {
-                        var level = new Level('Test', prog, [{ accept: true, input: new core.Tape(), output: new core.Tape(), limit: 0 }]);
-                        this.stage.clear();
-                        this.stage.push(new LevelEditor(this.paper, 0, 0, this.canvasSize.width, this.canvasSize.height, level));
-                        this.program = prog;
-                    }
-                }, {
-                    key: 'testProgram',
-                    value: function testProgram() {
-                        var text = $("#test-strings").val();
-                        var strings = text.split('\n');
-
-                        var newStrings = [];
-
-                        var runner = new Interpreter();
-                        runner.setProgram(this.program);
-
-                        var _iteratorNormalCompletion = true;
-                        var _didIteratorError = false;
-                        var _iteratorError = undefined;
-
-                        try {
-                            for (var _iterator = strings[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                                var s = _step.value;
-
-                                var tape = new core.Tape();
-                                var _iteratorNormalCompletion2 = true;
-                                var _didIteratorError2 = false;
-                                var _iteratorError2 = undefined;
-
-                                try {
-                                    for (var _iterator2 = s[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                                        var c = _step2.value;
-
-                                        tape.append(core.symbols[c]);
-                                    }
-                                } catch (err) {
-                                    _didIteratorError2 = true;
-                                    _iteratorError2 = err;
-                                } finally {
-                                    try {
-                                        if (!_iteratorNormalCompletion2 && _iterator2['return']) {
-                                            _iterator2['return']();
-                                        }
-                                    } finally {
-                                        if (_didIteratorError2) {
-                                            throw _iteratorError2;
-                                        }
-                                    }
-                                }
-
-                                runner.setTape(tape);
-                                console.log(runner);
-                            }
-                        } catch (err) {
-                            _didIteratorError = true;
-                            _iteratorError = err;
-                        } finally {
-                            try {
-                                if (!_iteratorNormalCompletion && _iterator['return']) {
-                                    _iterator['return']();
-                                }
-                            } finally {
-                                if (_didIteratorError) {
-                                    throw _iteratorError;
-                                }
-                            }
-                        }
-                    }
-                }, {
                     key: 'main',
                     value: function main() {
                         var _this = this;
@@ -220,8 +89,246 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                             tempProgram.setEnd(4, 8);
 
                             _this.setToProgram(tempProgram);
-                            _this.clearGeneratedAndLoadStrings();
+                            _this.clearProgramGeneratedAndLoadStrings();
                         });
+
+                        var jsonForm = $('#json-form');
+                        jsonForm.find('button:first').click(function () {
+                            return _this.generateJson();
+                        });
+                        jsonForm.find('button:last').click(function () {
+                            return _this.loadFromJson();
+                        });
+                        jsonForm.find('input').val('');
+                        var manufactoriaForm = $('#manufactoria-form');
+                        manufactoriaForm.find('button:first').click(function () {
+                            return _this.generateManufactoria();
+                        });
+                        manufactoriaForm.find('button:last').click(function () {
+                            return _this.loadFromManufactoria();
+                        });
+                        manufactoriaForm.find('input').val('');
+                        var testForm = $('#test-form');
+                        testForm.find('button:first').click(function () {
+                            return _this.generateTestVector();
+                        });
+                        testForm.find('button:last').click(function () {
+                            return _this.loadFromTestVector();
+                        });
+                        testForm.find('input').val('');
+
+                        $("#add-test").click(function () {
+                            return _this.addTest();
+                        });
+                    }
+                }, {
+                    key: 'clearProgramGeneratedAndLoadStrings',
+                    value: function clearProgramGeneratedAndLoadStrings() {
+                        $('#json-form').find('input').val('');
+                        $('#manufactoria-form').find('input').val('');
+                    }
+                }, {
+                    key: 'clearTestTags',
+                    value: function clearTestTags() {
+                        $(".test-success").remove();
+                        $(".test-failure").remove();
+                        $("test-form").find('input').val('');
+                    }
+                }, {
+                    key: 'loadFromJson',
+                    value: function loadFromJson() {
+                        var jsonForm = $('#json-form'),
+                            programString = jsonForm.find('input').val().trim();
+                        var prog = loader.jsonToProgram(JSON.parse(programString));
+                        if (prog) {
+                            this.setToProgram(prog);
+                            this.clearProgramGeneratedAndLoadStrings();
+                        } else {
+                            console.log('Unable to load program string');
+                            return null;
+                        }
+                    }
+                }, {
+                    key: 'loadFromManufactoria',
+                    value: function loadFromManufactoria() {
+                        var manufactoriaForm = $('#manufactoria-form'),
+                            programString = manufactoriaForm.find('input').val().trim();
+                        var prog = program.readLegacyProgramString(programString);
+                        if (prog) {
+                            this.setToProgram(prog);
+                            this.clearProgramGeneratedAndLoadStrings();
+                        } else {
+                            console.log('Unable to load program string');
+                            return null;
+                        }
+                    }
+                }, {
+                    key: 'loadFromTestVector',
+                    value: function loadFromTestVector() {
+                        var _this2 = this;
+
+                        var testForm = $('#test-form');
+                        var testVectorString = testForm.find('input').val().trim();
+                        var strings = testVectorString.split(";");
+                        strings.map(function (x) {
+                            return _this2.addTest(x);
+                        });
+                    }
+                }, {
+                    key: 'generateJson',
+                    value: function generateJson() {
+                        if (this.program != null) {
+                            var json = loader.programToJson(this.program);
+                            $('#json-form').find('input').val(JSON.stringify(json));
+                        }
+                    }
+                }, {
+                    key: 'generateManufactoria',
+                    value: function generateManufactoria() {
+                        if (this.program != null) {
+                            var str = program.generateLegacyProgramString(this.program);
+                            $('#manufactoria-form').find('input').val(str);
+                        }
+                    }
+                }, {
+                    key: 'generateTestVector',
+                    value: function generateTestVector() {
+                        var list = [];
+                        $("#test-editor").find("span.test-string").each(function () {
+                            list.push($(this).html());
+                        });
+                        $("#test-form").find("input").val(list.join(";"));
+                    }
+                }, {
+                    key: 'setToProgram',
+                    value: function setToProgram(prog) {
+                        var level = new Level('Test', prog, [{ accept: true, input: new core.Tape(), output: new core.Tape(), limit: 0 }]);
+                        this.stage.clear();
+                        this.stage.push(new LevelEditor(this.paper, 0, 0, this.canvasSize.width, this.canvasSize.height, level));
+                        this.program = prog;
+                    }
+                }, {
+                    key: 'addTest',
+                    value: function addTest(t) {
+                        var _this3 = this;
+
+                        var el = $("<span>").prop("contenteditable", true).addClass("test-string");
+
+                        console.log(t);
+                        if (t != null) {
+                            el.html(s);
+                        }
+
+                        el.keydown(function (e) {
+                            if (e.which == 13) {
+                                e.preventDefault();
+                                if (e.ctrlKey) {
+                                    _this3.testProgram();
+                                } else {
+                                    _this3.parseTests();
+                                    _this3.addTest();
+                                }
+                                return false;
+                            }
+                            if (!(e.which >= 37 && e.which <= 40)) {
+                                // Wasn't the arrow keys; means it's an edit, clear the test results
+                                _this3.clearTestTags();
+                            }
+                        });
+                        $("#add-test").before(el);
+                        $("#add-test").before($("<br>"));
+                        el.focus();
+                    }
+                }, {
+                    key: 'parseTests',
+                    value: function parseTests() {
+
+                        var testVector = [];
+
+                        // [string]:[A or R][:][Output tape (optional)];
+
+                        var parts = $("#test-editor").find(".test-string");
+                        parts.each(function () {
+                            var testString = $(this).html().trim();
+                            var parts = testString.split(':').map(function (x) {
+                                return x.trim();
+                            });
+                            testVector.push({
+                                string: parts[0],
+                                result: parts[1],
+                                output: parts.length > 2 ? parts[2] : null,
+                                spanElement: this
+                            });
+                        });
+
+                        this.testVector = testVector;
+                    }
+                }, {
+                    key: 'testProgram',
+                    value: function testProgram() {
+
+                        try {
+                            this.parseTests();
+                        } catch (e) {
+                            alert("Invalid test strings");
+                            return;
+                        }
+
+                        this.clearTestTags();
+
+                        var runner = new Interpreter();
+                        runner.setProgram(this.program);
+
+                        var _iteratorNormalCompletion = true;
+                        var _didIteratorError = false;
+                        var _iteratorError = undefined;
+
+                        try {
+                            for (var _iterator = this.testVector[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                var t = _step.value;
+
+                                var inputTape = new core.Tape();
+                                inputTape.setFromString(t.string);
+
+                                runner.setTape(inputTape);
+                                runner.start();
+                                while (runner.running) runner.step();
+                                console.log(t, runner.accept);
+
+                                var resultMatch = t.result == "A" && runner.accept || t.result == "R" && !runner.accept;
+                                var outputMatch = true;
+                                if (t.output != null) {
+                                    var referenceTape = new core.Tape();
+                                    referenceTape.setFromString(t.output);
+                                    outputMatch = core.Tape.isEqual(runner.tape, referenceTape);
+                                }
+
+                                var pass = resultMatch && outputMatch;
+
+                                var tag;
+                                if (pass) {
+                                    tag = $("<span>").addClass("test-success").html("PASS");
+                                    $(t.spanElement).after(tag);
+                                } else {
+                                    tag = $("<span>").addClass("test-failure").html("FAIL");
+                                    $(t.spanElement).after(tag);
+                                    if (t.output != null) tag.after($("<span>").addClass("test-failure").html("Ending Tape: " + runner.tape.toString()));
+                                }
+                            }
+                        } catch (err) {
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator['return']) {
+                                    _iterator['return']();
+                                }
+                            } finally {
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
+                            }
+                        }
                     }
                 }]);
 
@@ -229,11 +336,6 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
             })();
 
             _export('default', App);
-
-            /*
-             Example hash level:
-             #{"title":"Sample","tape":["BYRGGYRYRGRRGBYRGYRYRGYRGBRYRRBRBGBBYRBYRBGBRBYRRYRYRGBGGBGRYRRGRRYRYRRYRBRRBYRGGRBYRBRBYRRYRGRRGGRRRGYRBYRRRRRRBYRBBGBBRG"],"program":{"cols":9,"rows":9,"cells":[{"x":2,"y":1,"orientation":"ROT3","type":"Conveyor"},{"x":2,"y":2,"orientation":"ROT3","type":"BranchBR"},{"x":2,"y":3,"orientation":"ROT3","type":"BranchBR"},{"x":2,"y":4,"orientation":"ROT3","type":"BranchGY"},{"x":2,"y":5,"orientation":"ROT3","type":"BranchGY"},{"x":3,"y":1,"orientation":"ROT2","type":"Conveyor"},{"x":3,"y":2,"orientation":"ROT2","type":"BranchBR"},{"x":3,"y":3,"orientation":"ROT2","type":"BranchBR"},{"x":3,"y":4,"orientation":"ROT2","type":"BranchGY"},{"x":3,"y":5,"orientation":"ROT2","type":"BranchGY"},{"x":4,"y":1,"orientation":"ROT1","type":"Conveyor"},{"x":4,"y":2,"orientation":"ROT1","type":"BranchBR"},{"x":4,"y":3,"orientation":"ROT1","type":"BranchBR"},{"x":4,"y":4,"orientation":"ROT1","type":"BranchGY"},{"x":4,"y":5,"orientation":"ROT1","type":"BranchGY"},{"x":5,"y":1,"orientation":"ID","type":"Conveyor"},{"x":5,"y":2,"orientation":"MIR","type":"BranchBR"},{"x":5,"y":3,"orientation":"ID","type":"BranchBR"},{"x":5,"y":4,"orientation":"MIR","type":"BranchGY"},{"x":5,"y":5,"orientation":"ID","type":"BranchGY"}],"start":{"x":4,"y":0,"orientation":"ID"},"end":{"x":4,"y":8,"orientation":"ID"}}}
-             */
         }
     };
 });
@@ -439,12 +541,48 @@ System.register('core', ['signals.js', 'loader'], function (_export) {
                 }
 
                 _createClass(Tape, [{
+                    key: 'setFromString',
+                    value: function setFromString(s) {
+                        var _iteratorNormalCompletion = true;
+                        var _didIteratorError = false;
+                        var _iteratorError = undefined;
+
+                        try {
+                            for (var _iterator = s[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                var c = _step.value;
+
+                                this.append(symbols[c]);
+                            }
+                        } catch (err) {
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator['return']) {
+                                    _iterator['return']();
+                                }
+                            } finally {
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
+                            }
+                        }
+                    }
+                }, {
+                    key: 'toString',
+                    value: function toString() {
+                        var codes = { 'red': 'R', 'blue': 'B', 'green': 'G', 'yellow': 'Y' };
+                        return this.symbols.map(function (x) {
+                            return codes[x.symbol];
+                        }).join('');
+                    }
+                }, {
                     key: 'head',
                     value: function head() {
                         if (this.symbols.length > 0) {
                             return this.symbols[0];
                         } else {
-                            return core.EMPTY;
+                            return this.symbols.EMPTY;
                         }
                     }
                 }, {
@@ -455,7 +593,7 @@ System.register('core', ['signals.js', 'loader'], function (_export) {
                             this.changed.dispatch('pop');
                             return popped;
                         } else {
-                            return core.EMPTY;
+                            return this.symbols.EMPTY;
                         }
                     }
                 }, {
@@ -529,7 +667,6 @@ System.register('editor', ['program', 'graphics', 'view', 'tmath'], function (_e
     }
 
     function dispatchKeyEvents(evt) {
-        console.log(evt);
         var data = _.clone(mousePosition),
             what = null,
             key = evt.key || String.fromCharCode(evt.keyCode).toLowerCase();
@@ -4071,8 +4208,6 @@ System.register('view', ['core', 'graphics', 'editor', 'codeCell', 'tmath', 'pro
                         var c = cell,
                             paper = this.paper,
                             grid = this.gridView;
-
-                        console.log('draw');
 
                         if (c.type != 'Empty') {
                             var container = undefined;

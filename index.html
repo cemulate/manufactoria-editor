@@ -41,88 +41,87 @@
 
   </head>
   <body>
-    <div class="row hide-fullscreen">
-      <div class="small-12 medium-6 small-only-text-center columns">
-        <h1>Manufractoria</h1>
+      <div class="row hide-fullscreen">
+        <div class="small-12 medium-6 small-only-text-center columns">
+          <h1>Manufactoria Editor</h1>
+        </div>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="game-container">
-        <svg id="main-svg"></svg>
+      <div class="row">
+        <div class="game-container">
+          <svg id="main-svg"></svg>
+        </div>
       </div>
-    </div>
-    <div class="row hide-fullscreen">
-      <div class="columns"><p></p></div>
-    </div>
-    <!-- <div class="row large-center hide-for-touch hide-fullscreen">
-      <div class="medium-5 columns end">
-        <ul class="controls-desc">
-          <li><kbd>1-9</kbd> select tile</li>
-          <li><kbd>w</kbd>&nbsp;up&nbsp;<kbd>s</kbd>&nbsp;down&nbsp;<kbd>a</kbd>&nbsp;left&nbsp;<kbd>d</kbd>&nbsp;right</li>
-          <li><kbd>r</kbd> rotate</li>
-          <li><kbd>m</kbd> mirror</li>
-          <li><kbd>x</kbd> clear/delete</li>
-        </ul>
+      <div class="row hide-fullscreen">
+        <div class="columns"><p></p></div>
       </div>
-    </div> -->
 
-    <form>
-      <div class="row form hide-fullscreen">
-        <div class="medium-12 large-12 columns">
-          <div class="row collapse " id="json-form">
-            <label>Generate or load from a JSON string encoding your level</label>
-            <div class="small-2 columns">
-              <button type="button" class="button prefix">Generate</button>
-            </div>
-            <div class="small-8 columns">
-              <input style="font-family: monospace; font-size: 14px" type="text"></input>
-            </div>
-            <div class="small-2 columns">
-              <button type="button" class="button success postfix">Load</button>
+      <form>
+        <div class="row form hide-fullscreen">
+          <div class="medium-12 large-12 columns">
+            <div class="row collapse " id="json-form">
+              <label>Generate or load from a JSON string encoding your program</label>
+              <div class="small-2 columns">
+                <button type="button" class="button prefix">Generate</button>
+              </div>
+              <div class="small-8 columns">
+                <input style="font-family: monospace; font-size: 14px" type="text"></input>
+              </div>
+              <div class="small-2 columns">
+                <button type="button" class="button success postfix">Load</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </form>
+      </form>
 
-    <form>
-      <div class="row form hide-fullscreen">
-        <div class="medium-12 large-12 columns">
-          <div class="row collapse " id="manufactoria-form">
-            <label>Generate or load from a Manufactoria URL</label>
-            <div class="small-2 columns">
-              <button type="button" class="button prefix">Generate</button>
-            </div>
-            <div class="small-8 columns">
-              <input style="font-family: monospace; font-size: 14px" type="text"></input>
-            </div>
-            <div class="small-2 columns">
-              <button type="button" class="button success postfix">Load</button>
+      <form>
+        <div class="row form hide-fullscreen">
+          <div class="medium-12 large-12 columns">
+            <div class="row collapse " id="manufactoria-form">
+              <label>Generate or load from a Manufactoria URL</label>
+              <div class="small-2 columns">
+                <button type="button" class="button prefix">Generate</button>
+              </div>
+              <div class="small-8 columns">
+                <input style="font-family: monospace; font-size: 14px" type="text"></input>
+              </div>
+              <div class="small-2 columns">
+                <button type="button" class="button success postfix">Load</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </form>
+      </form>
 
-    <div class="row form hide-fullscreen">
-      <div class="medium-12 large-12 columns">
-        <label>Enter one test string per line (a string of 'R's and 'B's) and press Test below to run this program on each string </label>
-        <textarea style="font-family: monospace; font-size: 14px; color: black" id="test-strings" rows=15></textarea>
-      </div>
-    </div>
-
-    <form>
-      <div class="row form hide-fullscreen">
+      <div class="row hide-fullscreen">
         <div class="medium-12 large-12 columns">
-          <div class="row collapse">
-            <div class="small-12 columns">
-              <button id="test-button" type="button" class="button prefix postfix">Test</button>
+          <label>Use the button to add tests. Test strings have the format <kbd>[BR]*:[AR]:[BR]*</kbd>. The first section is the input tape, the second is whether that tape should be accepted or rejected,
+          and the optional third string is the correct output tape if applicable. Use <kbd>ctrl-Enter</kbd> when editing any test to run all tests</label>
+          <p id="test-editor" class="test-editor">
+              <a id="add-test"><strong>(+)</strong> Add Test</a>
+          </p>
+        </div>
+      </div>
+
+      <form>
+        <div class="row form hide-fullscreen">
+          <div class="medium-12 large-12 columns">
+            <div class="row collapse " id="test-form">
+              <label>Save or load this test set</label>
+              <div class="small-2 columns">
+                <button type="button" class="button prefix">Generate</button>
+              </div>
+              <div class="small-8 columns">
+                <input style="font-family: monospace; font-size: 14px" type="text"></input>
+              </div>
+              <div class="small-2 columns">
+                <button type="button" class="button success postfix">Load</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </form>
+      </form>
 
     <!-- bower:js -->
     <script type="text/javascript" src="libs/modernizr/modernizr.js"></script>
