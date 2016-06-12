@@ -6752,38 +6752,30 @@ ul.controls-desc {
     width: 100%;
     max-height: 100vh; }
 
-.test-editor {
+.test-results {
   font-family: monospace;
-  font-size: 14px;
-  background-color: white;
-  color: black; }
-  .test-editor #add-test {
-    margin: 5px;
-    padding: 5px; }
-  .test-editor span.test-string, .test-editor span.test-success, .test-editor span.test-failure {
+  font-size: 14px; }
+  .test-results span.test-string, .test-results span.test-success, .test-results span.test-failure {
     color: black;
     font-style: normal;
     font-weight: bold;
-    margin: 5px;
     padding: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
     background-clip: padding-box;
     display: inline-block;
     border-style: solid;
     border-width: 2px;
     border-radius: 4px; }
-  .test-editor span.test-string {
+  .test-results span.test-string {
     background-color: skyblue;
     border-color: blue; }
-  .test-editor span.test-success {
+  .test-results span.test-success {
     background-color: aquamarine;
     border-color: green; }
-  .test-editor span.test-failure {
+  .test-results span.test-failure {
     background-color: indianred;
     border-color: red; }
-  .test-editor span.test-string[contenteditable]:empty::before {
-    content: '(Write test string here)';
-    font-style: italic;
-    display: inline-block; }
 
 /*  green: #03ec04 */
 .tile-control-button .bg {

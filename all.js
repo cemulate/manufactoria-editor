@@ -108,31 +108,23 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                             return _this.loadFromManufactoria();
                         });
                         manufactoriaForm.find('input').val('');
-                        var testForm = $('#test-form');
-                        testForm.find('button:first').click(function () {
-                            return _this.generateTestVector();
-                        });
-                        testForm.find('button:last').click(function () {
-                            return _this.loadFromTestVector();
-                        });
-                        testForm.find('input').val('');
 
-                        $("#add-test").click(function () {
-                            return _this.addTest();
+                        $("#test-button").click(function () {
+                            return _this.testProgram();
                         });
+                        $("#max-length").val("6");
+                        $("#hang-number").val("1000");
+
+                        this.specEditor = ace.edit("spec-editor");
+                        this.specEditor.setTheme("ace/theme/twilight");
+                        this.specEditor.session.setMode("ace/mode/javascript");
+                        this.specEditor.setValue('testString = function(input) {\n    // input is a string of B\'s and R\'s\n    // return true or false\n    // for input-output problems, return a string representing the correct state of the tape after the program has run\n    return false;\n}');
                     }
                 }, {
                     key: 'clearProgramGeneratedAndLoadStrings',
                     value: function clearProgramGeneratedAndLoadStrings() {
                         $('#json-form').find('input').val('');
                         $('#manufactoria-form').find('input').val('');
-                    }
-                }, {
-                    key: 'clearTestTags',
-                    value: function clearTestTags() {
-                        $(".test-success").remove();
-                        $(".test-failure").remove();
-                        $("test-form").find('input').val('');
                     }
                 }, {
                     key: 'loadFromJson',
@@ -163,18 +155,6 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         }
                     }
                 }, {
-                    key: 'loadFromTestVector',
-                    value: function loadFromTestVector() {
-                        var _this2 = this;
-
-                        var testForm = $('#test-form');
-                        var testVectorString = testForm.find('input').val().trim();
-                        var strings = testVectorString.split(";");
-                        strings.map(function (x) {
-                            return _this2.addTest(x);
-                        });
-                    }
-                }, {
                     key: 'generateJson',
                     value: function generateJson() {
                         if (this.program != null) {
@@ -191,15 +171,6 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         }
                     }
                 }, {
-                    key: 'generateTestVector',
-                    value: function generateTestVector() {
-                        var list = [];
-                        $("#test-editor").find("span.test-string").each(function () {
-                            list.push($(this).html());
-                        });
-                        $("#test-form").find("input").val(list.join(";"));
-                    }
-                }, {
                     key: 'setToProgram',
                     value: function setToProgram(prog) {
                         var level = new Level('Test', prog, [{ accept: true, input: new core.Tape(), output: new core.Tape(), limit: 0 }]);
@@ -208,111 +179,59 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         this.program = prog;
                     }
                 }, {
-                    key: 'addTest',
-                    value: function addTest(t) {
-                        var _this3 = this;
-
-                        var el = $("<span>").prop("contenteditable", true).addClass("test-string");
-
-                        console.log(t);
-                        if (t != null) {
-                            el.html(s);
-                        }
-
-                        el.keydown(function (e) {
-                            if (e.which == 13) {
-                                e.preventDefault();
-                                if (e.ctrlKey) {
-                                    _this3.testProgram();
-                                } else {
-                                    _this3.parseTests();
-                                    _this3.addTest();
-                                }
-                                return false;
-                            }
-                            if (!(e.which >= 37 && e.which <= 40)) {
-                                // Wasn't the arrow keys; means it's an edit, clear the test results
-                                _this3.clearTestTags();
-                            }
-                        });
-                        $("#add-test").before(el);
-                        $("#add-test").before($("<br>"));
-                        el.focus();
-                    }
-                }, {
-                    key: 'parseTests',
-                    value: function parseTests() {
-
-                        var testVector = [];
-
-                        // [string]:[A or R][:][Output tape (optional)];
-
-                        var parts = $("#test-editor").find(".test-string");
-                        parts.each(function () {
-                            var testString = $(this).html().trim();
-                            var parts = testString.split(':').map(function (x) {
-                                return x.trim();
-                            });
-                            testVector.push({
-                                string: parts[0],
-                                result: parts[1],
-                                output: parts.length > 2 ? parts[2] : null,
-                                spanElement: this
-                            });
-                        });
-
-                        this.testVector = testVector;
-                    }
-                }, {
                     key: 'testProgram',
                     value: function testProgram() {
 
-                        try {
-                            this.parseTests();
-                        } catch (e) {
-                            alert("Invalid test strings");
-                            return;
-                        }
+                        var specFunction = this.specEditor.getValue();
 
-                        this.clearTestTags();
+                        var testString;
+                        eval(specFunction);
+
+                        var maxLength = parseInt($("#max-length").val());
+                        var hangNumber = parseInt($("#hang-number").val());
 
                         var runner = new Interpreter();
                         runner.setProgram(this.program);
+
+                        var testVector = [];
+                        for (var i = 0; i < Math.pow(2, maxLength); i++) {
+                            var s = i.toString(2);
+                            s = s.replace(/0/g, "R");
+                            s = s.replace(/1/g, "B");
+                            testVector.push(s);
+                        }
+
+                        var failed = [];
 
                         var _iteratorNormalCompletion = true;
                         var _didIteratorError = false;
                         var _iteratorError = undefined;
 
                         try {
-                            for (var _iterator = this.testVector[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                            for (var _iterator = testVector[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                                 var t = _step.value;
 
                                 var inputTape = new core.Tape();
-                                inputTape.setFromString(t.string);
+                                inputTape.setFromString(t);
 
                                 runner.setTape(inputTape);
-                                runner.start();
-                                while (runner.running) runner.step();
-                                console.log(t, runner.accept);
+                                var didHalt = runner.run(hangNumber);
 
-                                var resultMatch = t.result == "A" && runner.accept || t.result == "R" && !runner.accept;
-                                var outputMatch = true;
-                                if (t.output != null) {
-                                    var referenceTape = new core.Tape();
-                                    referenceTape.setFromString(t.output);
-                                    outputMatch = core.Tape.isEqual(runner.tape, referenceTape);
+                                if (!didHalt) {
+                                    this.notifyNonHalting(t);
+                                    return;
                                 }
 
-                                var pass = resultMatch && outputMatch;
+                                var pass;
+                                var specResult = testString(t);
 
-                                var tag;
-                                if (pass) {
-                                    tag = $("<span>").addClass("test-success").html("PASS");
-                                    $(t.spanElement).after(tag);
-                                } else {
-                                    tag = $("<span>").addClass("test-failure").html("FAIL");
-                                    $(t.spanElement).after(tag);
-                                    if (t.output != null) tag.after($("<span>").addClass("test-failure").html("Ending Tape: " + runner.tape.toString()));
+                                if (typeof specResult == "boolean") {
+                                    pass = specResult == runner.accept;
+                                    if (!pass) failed.push({ input: t, correct: specResult, actual: runner.accept });
+                                } else if (typeof specResult == "string") {
+                                    var runnerTape = runner.tape.toString();
+                                    pass = specResult == runnerTape;
+                                    if (!pass) failed.push({ input: t, correct: specResult, actual: runnerTape });
                                 }
                             }
                         } catch (err) {
@@ -326,6 +245,55 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                             } finally {
                                 if (_didIteratorError) {
                                     throw _iteratorError;
+                                }
+                            }
+                        }
+
+                        this.printResults(failed);
+                    }
+                }, {
+                    key: 'notifyNonHalting',
+                    value: function notifyNonHalting(nonHalting) {
+                        $("#test-results").empty();
+                        $("#test-results").append($("<span>").addClass("test-failure").html("Program failed to halt in the specified number of steps on input string: " + nonHalting));
+                    }
+                }, {
+                    key: 'printResults',
+                    value: function printResults(failed) {
+                        $("#test-results").empty();
+                        if (failed.length == 0) {
+                            $("#test-results").append($("<span>").addClass("test-success").html("Programs match behavior on all tested strings."));
+                        } else {
+                            var _iteratorNormalCompletion2 = true;
+                            var _didIteratorError2 = false;
+                            var _iteratorError2 = undefined;
+
+                            try {
+                                for (var _iterator2 = failed[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                                    var f = _step2.value;
+
+                                    var string = "Failed on input string: " + f.input;
+                                    $("#test-results").append($("<span>").addClass("test-failure").html(string));
+
+                                    var correctString = typeof f.correct == "boolean" ? f.correct ? "ACCEPT" : "REJECT" : f.correct;
+                                    var actualString = typeof f.actual == "boolean" ? f.actual ? "ACCEPT" : "REJECT" : f.actual;
+
+                                    $("#test-results").append($("<span>").addClass("test-failure").html("Correct: " + correctString));
+                                    $("#test-results").append($("<span>").addClass("test-failure").html("Actual: " + actualString));
+                                    $("#test-results").append($("<br>"));
+                                }
+                            } catch (err) {
+                                _didIteratorError2 = true;
+                                _iteratorError2 = err;
+                            } finally {
+                                try {
+                                    if (!_iteratorNormalCompletion2 && _iterator2['return']) {
+                                        _iterator2['return']();
+                                    }
+                                } finally {
+                                    if (_didIteratorError2) {
+                                        throw _iteratorError2;
+                                    }
                                 }
                             }
                         }
@@ -1837,8 +1805,6 @@ System.register('interpreter', ['program', 'codeCell', 'tmath', 'core'], functio
                             return result;
                         }
 
-                        console.log('Invalid cell type.');
-
                         return [false, null, program.directions.UP];
                     }
                 }, {
@@ -1878,6 +1844,18 @@ System.register('interpreter', ['program', 'codeCell', 'tmath', 'core'], functio
                             this.position = this.position.add(this.facing);
                             this.cycles += 1;
                         }
+                    }
+                }, {
+                    key: 'run',
+                    value: function run(n) {
+                        var i = 0;
+                        this.start();
+                        while (this.running && i < n) {
+                            this.step();
+                            i += 1;
+                        }
+                        var halted = i < n;
+                        return halted;
                     }
                 }]);
 
