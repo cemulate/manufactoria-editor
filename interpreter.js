@@ -89,7 +89,7 @@ export class Interpreter {
         let head = this.tape.head();
 
         // Check if done
-        if (cell.type == 'Empty' || (cell.type == 'Start' && this.cycles > 0)) {
+        if (cell == null || cell.type == 'Empty' || (cell.type == 'Start' && this.cycles > 0)) {
             this.running = false;
             this.accept = false;
         } else if (cell.type == 'End') {
