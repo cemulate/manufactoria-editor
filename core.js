@@ -29,6 +29,8 @@ export class Tape {
 
     setFromString(s) {
         for (var c of s) {
+            if (c == "0") c = "R";
+            if (c == "1") c = "B";
             this.append(symbols[c]);
         }
     }
