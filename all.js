@@ -551,6 +551,8 @@ System.register('core', ['signals.js', 'loader'], function (_export) {
                             for (var _iterator = s[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                                 var c = _step.value;
 
+                                if (c == "0") c = "R";
+                                if (c == "1") c = "B";
                                 this.append(symbols[c]);
                             }
                         } catch (err) {
@@ -1850,7 +1852,7 @@ System.register('interpreter', ['program', 'codeCell', 'tmath', 'core'], functio
                         var head = this.tape.head();
 
                         // Check if done
-                        if (cell.type == 'Empty' || cell.type == 'Start' && this.cycles > 0) {
+                        if (cell == null || cell.type == 'Empty' || cell.type == 'Start' && this.cycles > 0) {
                             this.running = false;
                             this.accept = false;
                         } else if (cell.type == 'End') {
