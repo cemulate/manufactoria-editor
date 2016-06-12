@@ -118,7 +118,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         this.specEditor = ace.edit("spec-editor");
                         this.specEditor.setTheme("ace/theme/twilight");
                         this.specEditor.session.setMode("ace/mode/javascript");
-                        this.specEditor.setValue('testString = function(input) {\n    // input is a string of B\'s and R\'s\n    // return true or false\n    // for input-output problems, return a string representing the correct state of the tape after the program has run\n    return false;\n}');
+                        this.specEditor.setValue('testString = function(input) {\n    // input is a string of B\'s and R\'s\n    // return true or false\n    // for input-output problems, return a string representing the correct state of the tape after the program has run\n\n    // Example for Manufactoria level 6 (Robocats!)\n    // Manufactoria implementation can be loaded with the following URL:\n    // http://pleasingfungus.com/Manufactoria/?lvl=6&code=c11:5f2;p12:5f7;p13:5f7;p14:5f6;c12:4f3;c14:4f3;c14:6f0;c13:6f0;i12:6f6;c11:6f1;c15:5f3;c15:6f3;c15:7f3;c15:8f3;c15:9f3;c15:10f3;c15:11f0;c14:11f0;c13:11f0;\n    return input.endsWith("BB");\n}');
                     }
                 }, {
                     key: 'clearProgramGeneratedAndLoadStrings',
