@@ -95,36 +95,44 @@
 
       <div class="row hide-fullscreen">
         <div class="medium-12 large-12 columns">
-          <label>Use the button to add tests. Test strings have the format <kbd>[BR]*:[AR]:[BR]*</kbd>. The first section is the input tape, the second is whether that tape should be accepted or rejected,
-          and the optional third string is the correct output tape if applicable. Use <kbd>ctrl-Enter</kbd> when editing any test to run all tests. You can also enter strings in binary where
-          <kbd>R=0,B=1</kbd></label>
-          <p id="test-editor" class="test-editor" spellcheck="false">
-              <a id="add-test"><strong>(+)</strong> Add Test</a>
-          </p>
+          <label>Write a function that is equivalent in behavior to your desired Manufactoria program, and then use the button to run tests</label>
+          <div id="spec-editor" style="height: 300px"></div>
         </div>
       </div>
+
+      <div style="height:20px;"></div>
 
       <form>
         <div class="row form hide-fullscreen">
           <div class="medium-12 large-12 columns">
-            <div class="row collapse " id="test-form">
-              <label>Save or load this test set</label>
-              <div class="small-2 columns">
-                <button type="button" class="button prefix">Generate</button>
-              </div>
+            <div class="row collapse " id="json-form">
+              <label>Run a battery of tests. The first number is the max string length that the engine will test; all strings up to this length are tested.
+              The second value is the max number of steps to run the interpreter before giving up (for hung programs)</label>
               <div class="small-8 columns">
-                <input style="font-family: monospace; font-size: 14px" type="text"></input>
+                <button id="test-button" type="button" class="button prefix">Test</button>
               </div>
               <div class="small-2 columns">
-                <button type="button" class="button success postfix">Load</button>
+                <input id="max-length" style="font-family: monospace; font-size: 14px" type="number"></input>
+              </div>
+              <div class="small-2 columns">
+                <input id="hang-number" style="font-family: monospace; font-size: 14px" type="number"></input>
               </div>
             </div>
           </div>
         </div>
       </form>
 
+      <div class="row hide-fullscreen">
+        <div class="medium-12 large-12 columns">
+          <label>Results</label>
+          <p id="test-results" class="test-results">
+          </p>
+        </div>
+      </div>
+
     <!-- bower:js -->
     <!-- endbower -->
+    <script type="text/javascript" src="libs/ace-builds/src-min/ace.js"></script>
 
     <script>
      $(document).foundation();

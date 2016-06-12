@@ -70,23 +70,25 @@ class App {
         manufactoriaForm.find('button:first').click(() => this.generateManufactoria());
         manufactoriaForm.find('button:last').click(() => this.loadFromManufactoria());
         manufactoriaForm.find('input').val('');
-        var testForm = $('#test-form');
-        testForm.find('button:first').click(() => this.generateTestVector());
-        testForm.find('button:last').click(() => this.loadFromTestVector());
-        testForm.find('input').val('');
 
-        $("#add-test").click(() => this.addTest());
+        $("#test-button").click(() => this.testProgram());
+        $("#max-length").val("6");
+        $("#hang-number").val("1000");
+
+        this.specEditor = ace.edit("spec-editor");
+        this.specEditor.setTheme("ace/theme/twilight");
+        this.specEditor.session.setMode("ace/mode/javascript");
+        this.specEditor.setValue(`testString = function(input) {
+    // input is a string of B's and R's
+    // return true or false
+    // for input-output problems, return a string representing the correct state of the tape after the program has run
+    return false;
+}`);
     }
 
     clearProgramGeneratedAndLoadStrings() {
         $('#json-form').find('input').val('');
         $('#manufactoria-form').find('input').val('');
-    }
-
-    clearTestTags() {
-        $(".test-success").remove();
-        $(".test-failure").remove();
-        $("test-form").find('input').val('');
     }
 
     loadFromJson() {
@@ -115,13 +117,6 @@ class App {
         }
     }
 
-    loadFromTestVector() {
-        var testForm = $('#test-form');
-        var testVectorString = testForm.find('input').val().trim();
-        var strings = testVectorString.split(";");
-        strings.map(x => this.addTest(x));
-    }
-
     generateJson() {
         if (this.program != null) {
             var json = loader.programToJson(this.program);
@@ -134,14 +129,6 @@ class App {
             var str = program.generateLegacyProgramString(this.program);
             $('#manufactoria-form').find('input').val(str);
         }
-    }
-
-    generateTestVector() {
-        var list = [];
-        $("#test-editor").find("span.test-string").each(function () {
-            list.push($(this).html());
-        });
-        $("#test-form").find("input").val(list.join(";"));
     }
 
     setToProgram(prog) {
@@ -162,97 +149,77 @@ class App {
         this.program = prog;
     }
 
-    addTest(t) {
-        var el = $("<span>").prop("contenteditable", true).addClass("test-string");
-
-        console.log(t);
-        if (t != null) {
-            el.html(s);
-        }
-
-        el.keydown(e => {
-            if (e.which == 13) {
-                e.preventDefault();
-                if (e.ctrlKey) {
-                    this.testProgram();
-                } else {
-                    this.parseTests();
-                    this.addTest();
-                }
-                return false;
-            }
-            if (!(e.which >= 37 && e.which <= 40)) {
-                // Wasn't the arrow keys; means it's an edit, clear the test results
-                this.clearTestTags();
-            }
-        });
-        $("#add-test").before(el);
-        $("#add-test").before($("<br>"));
-        el.focus();
-    }
-
-    parseTests() {
-
-        var testVector = [];
-
-        // [string]:[A or R][:][Output tape (optional)];
-
-        var parts = $("#test-editor").find(".test-string");
-        parts.each(function () {
-            var testString = $(this).html().trim();
-            var parts = testString.split(':').map(x => x.trim());
-            testVector.push({
-                string: parts[0],
-                result: parts[1],
-                output: parts.length > 2 ? parts[2] : null,
-                spanElement: this
-            });
-        });
-
-        this.testVector = testVector;
-    }
-
     testProgram() {
 
-        try {
-            this.parseTests() ;
-        } catch (e) {
-            alert("Invalid test strings");
-            return;
-        }
+        var specFunction = this.specEditor.getValue();
 
-        this.clearTestTags();
+        var testString;
+        eval(specFunction);
+
+        var maxLength = parseInt($("#max-length").val());
+        var hangNumber = parseInt($("#hang-number").val());
 
         var runner = new Interpreter();
         runner.setProgram(this.program);
 
-        for (var t of this.testVector) {
+        var testVector = [];
+        for (var i = 0; i < Math.pow(2, maxLength); i ++) {
+            var s = i.toString(2);
+            s = s.replace(/0/g, "R");
+            s = s.replace(/1/g, "B");
+            testVector.push(s);
+        }
+
+        var failed = [];
+
+        for (var t of testVector) {
             var inputTape = new core.Tape();
-            inputTape.setFromString(t.string);
+            inputTape.setFromString(t);
 
             runner.setTape(inputTape);
-            runner.start();
-            while (runner.running) runner.step();
-            console.log(t, runner.accept);
+            var didHalt = runner.run(hangNumber);
 
-            var resultMatch = (t.result == "A" && runner.accept) || (t.result == "R" && !runner.accept);
-            var outputMatch = true;
-            if (t.output != null) {
-                var referenceTape = new core.Tape();
-                referenceTape.setFromString(t.output);
-                outputMatch = core.Tape.isEqual(runner.tape, referenceTape);
+            if (!didHalt) {
+                this.notifyNonHalting(t);
+                return;
             }
 
-            var pass = resultMatch && outputMatch;
+            var pass;
+            var specResult = testString(t);
 
-            var tag;
-            if (pass) {
-                tag = $("<span>").addClass("test-success").html("PASS");
-                $(t.spanElement).after(tag);
-            } else {
-                tag = $("<span>").addClass("test-failure").html("FAIL");
-                $(t.spanElement).after(tag);
-                if (t.output != null) tag.after($("<span>").addClass("test-failure").html("Ending Tape: " + runner.tape.toString()));
+            if (typeof(specResult) == "boolean") {
+                pass = (specResult == runner.accept)
+                if (!pass) failed.push({input: t, correct: specResult, actual: runner.accept});
+            } else if (typeof(specResult) == "string") {
+                var runnerTape = runner.tape.toString();
+                pass = (specResult == runnerTape);
+                if (!pass) failed.push({input: t, correct: specResult, actual: runnerTape});
+            }
+        }
+
+        this.printResults(failed);
+    }
+
+    notifyNonHalting(nonHalting) {
+        $("#test-results").empty();
+        $("#test-results").append($("<span>").addClass("test-failure").html("Program failed to halt in the specified number of steps on input string: " + nonHalting));
+    }
+
+    printResults(failed) {
+        $("#test-results").empty();
+        if (failed.length == 0) {
+            $("#test-results").append($("<span>").addClass("test-success").html("Programs match behavior on all tested strings."));
+        } else {
+            for (var f of failed) {
+                var string = "Failed on input string: " + f.input;
+                $("#test-results").append($("<span>").addClass("test-failure").html(string));
+
+                var correctString = typeof(f.correct) == "boolean" ? (f.correct ? "ACCEPT" : "REJECT") : f.correct;
+                var actualString = typeof(f.actual) == "boolean" ? (f.actual ? "ACCEPT" : "REJECT") : f.actual;
+
+                $("#test-results").append($("<span>").addClass("test-failure").html("Correct: " + correctString));
+                $("#test-results").append($("<span>").addClass("test-failure").html("Actual: " + actualString));
+                $("#test-results").append($("<br>"));
             }
         }
     }

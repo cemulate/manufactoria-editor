@@ -75,8 +75,6 @@ export class Interpreter {
             return result;
         }
 
-        console.log('Invalid cell type.');
-
         return [false, null, program.directions.UP];
     }
 
@@ -115,7 +113,17 @@ export class Interpreter {
             this.position = this.position.add(this.facing);
             this.cycles += 1;
         }
+    }
 
+    run(n) {
+        var i = 0;
+        this.start();
+        while (this.running && i < n) {
+            this.step();
+            i += 1;
+        }
+        var halted = (i < n);
+        return halted;
     }
 };
 

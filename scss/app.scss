@@ -14,23 +14,17 @@ ul.controls-desc{
     }
 }
 
-.test-editor {
+.test-results {
     font-family: monospace;
     font-size: 14px;
-    background-color: white;
-    color: black;
-
-    #add-test {
-        margin: 5px;
-        padding: 5px;
-    }
 
     span.test-string, span.test-success, span.test-failure {
         color: black;
         font-style: normal;
         font-weight: bold;
-        margin: 5px;
         padding: 5px;
+        margin-right: 5px;
+        margin-bottom: 5px;
         background-clip: padding-box;
         display: inline-block;
         border-style: solid;
@@ -51,12 +45,6 @@ ul.controls-desc{
     span.test-failure {
         background-color: indianred;
         border-color: red;
-    }
-
-    span.test-string[contenteditable]:empty::before {
-        content: '(Write test string here)';
-        font-style: italic;
-        display: inline-block;
     }
 }
 

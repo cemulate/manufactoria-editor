@@ -114,13 +114,13 @@ gulp.task('bower', ['copy-static'], function() {
             cwd: '.',
             ignorePath: /\.\.\/bower_components\//,
             fileTypes: {
-        html: {
-            replace: {
-                js: '<script type="text/javascript" src="libs/{{filePath}}"></script>',
-                css:'<link rel="stylesheet" href="libs/{{filePath}}" />'
+                html: {
+                    replace: {
+                        js: '<script type="text/javascript" src="libs/{{filePath}}"></script>',
+                        css:'<link rel="stylesheet" href="libs/{{filePath}}" />'
+                    }
+                }
             }
-        }
-    }
         }))
         .pipe(gulp.dest(dir.build));
 });

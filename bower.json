@@ -24,7 +24,8 @@
     "radiojs": "~0.2.0",
     "js-signals": "signals#~1.0.0",
     "Ionicons": "ionicons#~2.0.1",
-    "bourbon": "~4.2.5"
+    "bourbon": "~4.2.5",
+    "ace-builds": "^1.2.3"
   },
   "resolutions": {
     "Snap.svg": "master"
