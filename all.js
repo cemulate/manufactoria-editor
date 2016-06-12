@@ -85,8 +85,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                             var tempProgram = new program.Program(9, 9);
 
                             // fill in start and end with defaults
-                            tempProgram.setStart(4, 0);
-                            tempProgram.setEnd(4, 8);
+                            tempProgram.setDefaultStartEnd();
 
                             _this.setToProgram(tempProgram);
                             _this.clearProgramGeneratedAndLoadStrings();
@@ -119,6 +118,11 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         this.specEditor.setTheme("ace/theme/twilight");
                         this.specEditor.session.setMode("ace/mode/javascript");
                         this.specEditor.setValue('testString = function(input) {\n    // input is a string of B\'s and R\'s\n    // return true or false\n    // for input-output problems, return a string representing the correct state of the tape after the program has run\n\n    // Example for Manufactoria level 6 (Robocats!)\n    // Manufactoria implementation can be loaded with the following URL:\n    // http://pleasingfungus.com/Manufactoria/?lvl=6&code=c11:5f2;p12:5f7;p13:5f7;p14:5f6;c12:4f3;c14:4f3;c14:6f0;c13:6f0;i12:6f6;c11:6f1;c15:5f3;c15:6f3;c15:7f3;c15:8f3;c15:9f3;c15:10f3;c15:11f0;c14:11f0;c13:11f0;\n    return input.endsWith("BB");\n}');
+
+                        radio('editor:whole-program-changed').subscribe(function (info) {
+                            console.log(info.program);
+                            _this.setToProgram(info.program);
+                        });
                     }
                 }, {
                     key: 'clearProgramGeneratedAndLoadStrings',
@@ -193,7 +197,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         var runner = new Interpreter();
                         runner.setProgram(this.program);
 
-                        var testVector = [];
+                        var testVector = [""];
                         for (var i = 0; i < Math.pow(2, maxLength); i++) {
                             var s = i.toString(2);
                             s = s.replace(/0/g, "R");
@@ -1137,8 +1141,8 @@ System.register('graphics', [], function (_export) {
 
                 DeleteButton: 'img/delete-button.svg',
                 MirrorButton: 'img/mirror-button.svg',
-                PlayButton: 'img/play-button.svg',
-                PauseButton: 'img/pause-button.svg',
+                SizeUpButton: 'img/size-up-button.svg',
+                SizeDownButton: 'img/size-down-button.svg',
                 StopButton: 'img/stop-button.svg'
             };
             globalCanvas = null;
@@ -1175,7 +1179,7 @@ System.register('gui', ['editor', 'graphics', 'codeCell', 'view', 'picker', 'tma
 
     'use strict';
 
-    var editor, graphics, codeCell, toTransformString, LockedPicker, orientationByName, BaseControl, Palette, TileControl, PlayControl;
+    var editor, graphics, codeCell, toTransformString, LockedPicker, orientationByName, BaseControl, Palette, TileControl, SizeControl;
 
     var _get = function get(_x8, _x9, _x10) { var _again = true; _function: while (_again) { var object = _x8, property = _x9, receiver = _x10; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x8 = parent; _x9 = property; _x10 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
@@ -1590,49 +1594,30 @@ System.register('gui', ['editor', 'graphics', 'codeCell', 'view', 'picker', 'tma
 
             ;
 
-            PlayControl = (function (_BaseControl3) {
-                _inherits(PlayControl, _BaseControl3);
+            SizeControl = (function (_BaseControl3) {
+                _inherits(SizeControl, _BaseControl3);
 
-                function PlayControl(paper, x, y) {
+                function SizeControl(paper, x, y) {
                     var height = arguments.length <= 3 || arguments[3] === undefined ? 32 : arguments[3];
 
-                    _classCallCheck(this, PlayControl);
+                    _classCallCheck(this, SizeControl);
 
-                    _get(Object.getPrototypeOf(PlayControl.prototype), 'constructor', this).call(this, paper, x, y);
+                    _get(Object.getPrototypeOf(SizeControl.prototype), 'constructor', this).call(this, paper, x, y);
                     this.height = height;
 
                     this.buttonLayer = this._layer.g();
 
                     this.buttonLayer.transform('s' + height / 32);
 
-                    this.play = makeButton(0, 0, this.buttonLayer, 'PlayButton', 'play-control', 'play');
-                    this.pause = makeButton(32, 0, this.buttonLayer, 'PauseButton', 'play-control', 'pause');
-                    this.stop = makeButton(32 * 2, 0, this.buttonLayer, 'StopButton', 'play-control', 'stop');
+                    this.sizeDown = makeButton(0, 0, this.buttonLayer, 'SizeDownButton', 'play-control', 'size-down');
+                    this.sizeUp = makeButton(32, 0, this.buttonLayer, 'SizeUpButton', 'play-control', 'size-up');
 
                     this.picker = new LockedPicker({
                         el: this.buttonLayer.node,
                         children: '.play-control',
                         enableClass: 'enable',
                         disableClass: 'disable',
-                        rules: {
-                            '.play': {
-                                enable: ['.pause', '.stop'],
-                                disable: ['.play']
-                            },
-                            '.pause': {
-                                enable: ['.play', '.stop'],
-                                disable: ['.pause']
-                            },
-                            '.stop': {
-                                enable: ['.play'],
-                                disable: ['.pause', '.stop']
-                            }
-                        }
-                    });
-
-                    this.picker.applyRule({
-                        enable: ['.play'],
-                        disable: ['.pause', '.stop']
+                        rules: {}
                     });
 
                     function bc(btn, which) {
@@ -1641,22 +1626,21 @@ System.register('gui', ['editor', 'graphics', 'codeCell', 'view', 'picker', 'tma
                         });
                     }
 
-                    bc(this.play, 'play');
-                    bc(this.pause, 'pause');
-                    bc(this.stop, 'stop');
+                    bc(this.sizeUp, 'size-up');
+                    bc(this.sizeDown, 'size-down');
                 }
 
-                _createClass(PlayControl, [{
+                _createClass(SizeControl, [{
                     key: 'width',
                     get: function get() {
                         return this.height * 3;
                     }
                 }]);
 
-                return PlayControl;
+                return SizeControl;
             })(BaseControl);
 
-            _export('PlayControl', PlayControl);
+            _export('SizeControl', SizeControl);
 
             ;
         }
@@ -1900,7 +1884,7 @@ System.register('level', ['gui', 'layout', 'editor', 'view', 'core', 'interprete
 
     'use strict';
 
-    var BaseControl, Palette, TileControl, PlayControl, layout, Editor, ProgramView, TapeView, colorForSymbol, Tape, Interpreter, LevelDisplay, LevelEditor, TestVectorProgression, LevelRunner, Level;
+    var BaseControl, Palette, TileControl, SizeControl, layout, Editor, ProgramView, TapeView, colorForSymbol, Tape, Interpreter, LevelDisplay, LevelEditor, TestVectorProgression, LevelRunner, Level;
 
     var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -1915,7 +1899,7 @@ System.register('level', ['gui', 'layout', 'editor', 'view', 'core', 'interprete
             BaseControl = _gui.BaseControl;
             Palette = _gui.Palette;
             TileControl = _gui.TileControl;
-            PlayControl = _gui.PlayControl;
+            SizeControl = _gui.SizeControl;
         }, function (_layout) {
             layout = _layout['default'];
         }, function (_editor) {
@@ -1985,6 +1969,10 @@ System.register('level', ['gui', 'layout', 'editor', 'view', 'core', 'interprete
                         0 // height
                         );
 
+                        this.sizeControls = new SizeControl(this._layer, layout.CONTROL_X, this.height - 68 - layout.MARGIN, 68);
+
+                        this.sizeControls.x = layout.CONTROL_X + CONTROL_WIDTH / 2 - this.sizeControls.width / 2;
+
                         this.editor = new Editor(this._layer, this.programView, this.tileControl);
 
                         this.programView.drawProgram();
@@ -1996,19 +1984,28 @@ System.register('level', ['gui', 'layout', 'editor', 'view', 'core', 'interprete
                     value: function onVisible() {
                         _get(Object.getPrototypeOf(LevelEditor.prototype), 'onVisible', this).call(this);
 
-                        radio('play-clicked').subscribe([this._onPlayClicked, this]);
+                        radio('size-up-clicked').subscribe([this._onSizeUpClicked, this]);
+                        radio('size-down-clicked').subscribe([this._onSizeDownClicked, this]);
                     }
                 }, {
                     key: 'onHidden',
                     value: function onHidden() {
                         _get(Object.getPrototypeOf(LevelEditor.prototype), 'onHidden', this).call(this);
 
-                        radio('play-clicked').unsubscribe(this._onPlayClicked);
+                        radio('size-up-clicked').unsubscribe(this._onSizeUpClicked);
+                        radio('size-down-clicked').unsubscribe(this._onSizeDownClicked);
                     }
                 }, {
-                    key: '_onPlayClicked',
-                    value: function _onPlayClicked() {
-                        radio('editor:start-level').broadcast({ level: this.level, sender: this });
+                    key: '_onSizeUpClicked',
+                    value: function _onSizeUpClicked() {
+                        this.level.program.expand();
+                        radio('editor:whole-program-changed').broadcast({ program: this.level.program, sender: this });
+                    }
+                }, {
+                    key: '_onSizeDownClicked',
+                    value: function _onSizeDownClicked() {
+                        this.level.program.contract();
+                        radio('editor:whole-program-changed').broadcast({ program: this.level.program, sender: this });
                     }
                 }]);
 
@@ -3319,6 +3316,73 @@ System.register('program', ['core', 'tmath'], function (_export) {
                     key: 'setEnd',
                     value: function setEnd(x, y) {
                         this.setCell(x, y, 'End');
+                    }
+                }, {
+                    key: 'setDefaultStartEnd',
+                    value: function setDefaultStartEnd() {
+                        var x = Math.floor(this.cols / 2);
+                        this.setStart(x, 0);
+                        this.setEnd(x, this.rows - 1);
+                    }
+                }, {
+                    key: 'expand',
+                    value: function expand() {
+                        // Increase program rows/cols by two, maintaining the contents
+                        var newRows = this.rows + 2;
+                        var newCols = this.cols + 2;
+
+                        var newCells = [];
+                        for (var x = 0; x < newCols; ++x) {
+                            newCells.push([]);
+                            for (var y = 0; y < newRows; ++y) {
+                                newCells[x].push(new cellTypes.Empty());
+                            }
+                        }
+
+                        for (var x = 0; x < this.cols; ++x) {
+                            for (var y = 0; y < this.rows; ++y) {
+                                var c = this.getCell(x, y);
+                                if (!(c.type == "Start" || c.type == "End" || c.type == "Empty")) {
+                                    newCells[x + 1][y + 1] = c;
+                                }
+                            }
+                        }
+
+                        this.rows = newRows;
+                        this.cols = newCols;
+                        this.cells = newCells;
+
+                        this.setDefaultStartEnd();
+                    }
+                }, {
+                    key: 'contract',
+                    value: function contract() {
+                        // Decrease program rows/cols by two, maintaining the contents
+                        var newRows = this.rows - 2;
+                        var newCols = this.cols - 2;
+
+                        var newCells = [];
+                        for (var x = 0; x < newCols; ++x) {
+                            newCells.push([]);
+                            for (var y = 0; y < newRows; ++y) {
+                                newCells[x].push(new cellTypes.Empty());
+                            }
+                        }
+
+                        for (var x = 0; x < this.cols - 1; ++x) {
+                            for (var y = 0; y < this.rows - 1; ++y) {
+                                var c = this.getCell(x, y);
+                                if (!(c.type == "Start" || c.type == "End" || c.type == "Empty")) {
+                                    newCells[x - 1][y - 1] = c;
+                                }
+                            }
+                        }
+
+                        this.rows = newRows;
+                        this.cols = newCols;
+                        this.cells = newCells;
+
+                        this.setDefaultStartEnd();
                     }
                 }]);
 
