@@ -4,7 +4,7 @@
 import {BaseControl,
         Palette,
         TileControl,
-        PlayControl} from 'gui';
+        SizeControl} from 'gui';
 
 import layout from 'layout';
 
@@ -70,6 +70,15 @@ export class LevelEditor extends LevelDisplay {
             0    // height
         );
 
+        this.sizeControls = new SizeControl(
+            this._layer,
+            layout.CONTROL_X,
+            this.height - 68 - layout.MARGIN,
+            68
+        );
+
+        this.sizeControls.x = layout.CONTROL_X + CONTROL_WIDTH / 2 - this.sizeControls.width / 2;
+
         this.editor = new Editor(this._layer, this.programView, this.tileControl);
 
         this.programView.drawProgram();
@@ -80,17 +89,25 @@ export class LevelEditor extends LevelDisplay {
     onVisible() {
         super.onVisible();
 
-        radio('play-clicked').subscribe([this._onPlayClicked, this]);
+        radio('size-up-clicked').subscribe([this._onSizeUpClicked, this]);
+        radio('size-down-clicked').subscribe([this._onSizeDownClicked, this]);
     }
 
     onHidden() {
         super.onHidden();
 
-        radio('play-clicked').unsubscribe(this._onPlayClicked);
+        radio('size-up-clicked').unsubscribe(this._onSizeUpClicked);
+        radio('size-down-clicked').unsubscribe(this._onSizeDownClicked);
     }
 
-    _onPlayClicked() {
-        radio('editor:start-level').broadcast({level: this.level, sender: this});
+    _onSizeUpClicked() {
+        this.level.program.expand();
+        radio('editor:whole-program-changed').broadcast({program: this.level.program, sender: this});
+    }
+
+    _onSizeDownClicked() {
+        this.level.program.contract();
+        radio('editor:whole-program-changed').broadcast({program: this.level.program, sender: this});
     }
 };
 

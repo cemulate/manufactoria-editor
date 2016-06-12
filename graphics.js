@@ -18,8 +18,8 @@ let imageMap = {
 
     DeleteButton: 'img/delete-button.svg',
     MirrorButton: 'img/mirror-button.svg',
-    PlayButton: 'img/play-button.svg',
-    PauseButton: 'img/pause-button.svg',
+    SizeUpButton: 'img/size-up-button.svg',
+    SizeDownButton: 'img/size-down-button.svg',
     StopButton:  'img/stop-button.svg'
 },
 

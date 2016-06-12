@@ -77,6 +77,70 @@ class Program {
     setEnd(x, y) {
         this.setCell(x, y, 'End');
     }
+
+    setDefaultStartEnd() {
+        var x = Math.floor(this.cols/2);
+        this.setStart(x, 0);
+        this.setEnd(x, this.rows - 1);
+    }
+
+    expand() {
+        // Increase program rows/cols by two, maintaining the contents
+        var newRows = this.rows + 2;
+        var newCols = this.cols + 2;
+
+        var newCells = [];
+        for (let x = 0; x < newCols; ++x) {
+            newCells.push([]);
+            for (let y = 0; y < newRows; ++y) {
+                newCells[x].push(new cellTypes.Empty());
+            }
+        }
+
+        for (let x = 0; x < this.cols; ++x) {
+            for (let y = 0; y < this.rows; ++y) {
+                var c = this.getCell(x, y);
+                if (!(c.type == "Start" || c.type == "End" || c.type == "Empty")) {
+                    newCells[x+1][y+1] = c;
+                }
+            }
+        }
+
+        this.rows = newRows;
+        this.cols = newCols;
+        this.cells = newCells;
+
+        this.setDefaultStartEnd();
+    }
+
+    contract() {
+        // Decrease program rows/cols by two, maintaining the contents
+        var newRows = this.rows - 2;
+        var newCols = this.cols - 2;
+
+        var newCells = [];
+        for (let x = 0; x < newCols; ++x) {
+            newCells.push([]);
+            for (let y = 0; y < newRows; ++y) {
+                newCells[x].push(new cellTypes.Empty());
+            }
+        }
+
+        for (let x = 0; x < this.cols - 1; ++x) {
+            for (let y = 0; y < this.rows - 1; ++y) {
+                var c = this.getCell(x, y);
+                if (!(c.type == "Start" || c.type == "End" || c.type == "Empty")) {
+                    newCells[x-1][y-1] = c;
+                }
+            }
+        }
+
+        this.rows = newRows;
+        this.cols = newCols;
+        this.cells = newCells;
+
+        this.setDefaultStartEnd();
+    }
 };
 
 function readLegacyProgramString(url) {

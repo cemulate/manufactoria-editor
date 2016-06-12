@@ -344,7 +344,7 @@ export class TileControl extends BaseControl {
     }
 };
 
-export class PlayControl extends BaseControl {
+export class SizeControl extends BaseControl {
     constructor(paper, x, y, height=32) {
         super(paper, x, y);
         this.height = height;
@@ -353,34 +353,15 @@ export class PlayControl extends BaseControl {
 
         this.buttonLayer.transform('s' + height / 32);
 
-        this.play = makeButton(0, 0, this.buttonLayer, 'PlayButton', 'play-control', 'play');
-        this.pause = makeButton(32, 0, this.buttonLayer, 'PauseButton', 'play-control', 'pause');
-        this.stop = makeButton(32 * 2, 0, this.buttonLayer, 'StopButton', 'play-control', 'stop');
+        this.sizeDown = makeButton(0, 0, this.buttonLayer, 'SizeDownButton', 'play-control', 'size-down');
+        this.sizeUp = makeButton(32, 0, this.buttonLayer, 'SizeUpButton', 'play-control', 'size-up');
 
         this.picker = new LockedPicker({
             el: this.buttonLayer.node,
             children: '.play-control',
             enableClass: 'enable',
             disableClass: 'disable',
-            rules: {
-                '.play': {
-                    enable: ['.pause', '.stop'],
-                    disable: ['.play']
-                },
-                '.pause': {
-                    enable: ['.play', '.stop'],
-                    disable: ['.pause']
-                },
-                '.stop': {
-                    enable: ['.play'],
-                    disable: ['.pause', '.stop']
-                }
-            }
-        });
-
-        this.picker.applyRule({
-            enable: ['.play'],
-            disable: ['.pause', '.stop']
+            rules: {}
         });
 
         function bc(btn, which) {
@@ -389,9 +370,8 @@ export class PlayControl extends BaseControl {
             });
         }
 
-        bc(this.play, 'play');
-        bc(this.pause, 'pause');
-        bc(this.stop, 'stop');
+        bc(this.sizeUp, 'size-up');
+        bc(this.sizeDown, 'size-down');
     }
 
     get width() {

@@ -55,8 +55,7 @@ class App {
             let tempProgram = new program.Program(9, 9);
 
             // fill in start and end with defaults
-            tempProgram.setStart(4, 0);
-            tempProgram.setEnd(4, 8);
+            tempProgram.setDefaultStartEnd();
 
             this.setToProgram(tempProgram);
             this.clearProgramGeneratedAndLoadStrings();
@@ -88,6 +87,11 @@ class App {
     // http://pleasingfungus.com/Manufactoria/?lvl=6&code=c11:5f2;p12:5f7;p13:5f7;p14:5f6;c12:4f3;c14:4f3;c14:6f0;c13:6f0;i12:6f6;c11:6f1;c15:5f3;c15:6f3;c15:7f3;c15:8f3;c15:9f3;c15:10f3;c15:11f0;c14:11f0;c13:11f0;
     return input.endsWith("BB");
 }`);
+
+        radio('editor:whole-program-changed').subscribe((info) => {
+            console.log(info.program);
+            this.setToProgram(info.program);
+        });
     }
 
     clearProgramGeneratedAndLoadStrings() {
@@ -166,7 +170,7 @@ class App {
         var runner = new Interpreter();
         runner.setProgram(this.program);
 
-        var testVector = [];
+        var testVector = [""];
         for (var i = 0; i < Math.pow(2, maxLength); i ++) {
             var s = i.toString(2);
             s = s.replace(/0/g, "R");
