@@ -53,7 +53,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                 function App(width, height) {
                     _classCallCheck(this, App);
 
-                    this.program = null;
+                    this.levelEditor = null;
                     this.interpreter = null;
                     this.taggle = null;
                     this.canvasSize = {
@@ -87,7 +87,15 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                             // fill in start and end with defaults
                             tempProgram.setDefaultStartEnd();
 
-                            _this.setToProgram(tempProgram);
+                            var level = new Level('Test', tempProgram, [{ accept: true, input: new core.Tape(), output: new core.Tape(), limit: 0 }]);
+                            _this.stage.clear();
+
+                            var ed = new LevelEditor(_this.paper, 0, 0, _this.canvasSize.width, _this.canvasSize.height, level);
+                            ed.init();
+                            _this.stage.push(ed);
+
+                            _this.levelEditor = ed;
+
                             _this.clearProgramGeneratedAndLoadStrings();
                         });
 
@@ -118,11 +126,6 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         this.specEditor.setTheme("ace/theme/twilight");
                         this.specEditor.session.setMode("ace/mode/javascript");
                         this.specEditor.setValue('testString = function(input) {\n    // input is a string of B\'s and R\'s\n    // return true or false\n    // for input-output problems, return a string representing the correct state of the tape after the program has run\n\n    // Example for Manufactoria level 6 (Robocats!)\n    // Manufactoria implementation can be loaded with the following URL:\n    // http://pleasingfungus.com/Manufactoria/?lvl=6&code=c11:5f2;p12:5f7;p13:5f7;p14:5f6;c12:4f3;c14:4f3;c14:6f0;c13:6f0;i12:6f6;c11:6f1;c15:5f3;c15:6f3;c15:7f3;c15:8f3;c15:9f3;c15:10f3;c15:11f0;c14:11f0;c13:11f0;\n    return input.endsWith("BB");\n}');
-
-                        radio('editor:whole-program-changed').subscribe(function (info) {
-                            console.log(info.program);
-                            _this.setToProgram(info.program);
-                        });
                     }
                 }, {
                     key: 'clearProgramGeneratedAndLoadStrings',
@@ -137,7 +140,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                             programString = jsonForm.find('input').val().trim();
                         var prog = loader.jsonToProgram(JSON.parse(programString));
                         if (prog) {
-                            this.setToProgram(prog);
+                            this.levelEditor.setProgram(prog);
                             this.clearProgramGeneratedAndLoadStrings();
                         } else {
                             console.log('Unable to load program string');
@@ -151,7 +154,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                             programString = manufactoriaForm.find('input').val().trim();
                         var prog = program.readLegacyProgramString(programString);
                         if (prog) {
-                            this.setToProgram(prog);
+                            this.levelEditor.setProgram(prog);
                             this.clearProgramGeneratedAndLoadStrings();
                         } else {
                             console.log('Unable to load program string');
@@ -161,26 +164,18 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                 }, {
                     key: 'generateJson',
                     value: function generateJson() {
-                        if (this.program != null) {
-                            var json = loader.programToJson(this.program);
+                        if (this.levelEditor.level.program != null) {
+                            var json = loader.programToJson(this.levelEditor.level.program);
                             $('#json-form').find('input').val(JSON.stringify(json));
                         }
                     }
                 }, {
                     key: 'generateManufactoria',
                     value: function generateManufactoria() {
-                        if (this.program != null) {
-                            var str = program.generateLegacyProgramString(this.program);
+                        if (this.levelEditor.level.program != null) {
+                            var str = program.generateLegacyProgramString(this.levelEditor.level.program);
                             $('#manufactoria-form').find('input').val(str);
                         }
-                    }
-                }, {
-                    key: 'setToProgram',
-                    value: function setToProgram(prog) {
-                        var level = new Level('Test', prog, [{ accept: true, input: new core.Tape(), output: new core.Tape(), limit: 0 }]);
-                        this.stage.clear();
-                        this.stage.push(new LevelEditor(this.paper, 0, 0, this.canvasSize.width, this.canvasSize.height, level));
-                        this.program = prog;
                     }
                 }, {
                     key: 'testProgram',
@@ -195,7 +190,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         var hangNumber = parseInt($("#hang-number").val());
 
                         var runner = new Interpreter();
-                        runner.setProgram(this.program);
+                        runner.setProgram(this.levelEditor.level.program);
 
                         var testVector = [""];
                         for (var i = 0; i < Math.pow(2, maxLength); i++) {
@@ -1926,14 +1921,19 @@ System.register('level', ['gui', 'layout', 'editor', 'view', 'core', 'interprete
                     this.level = level;
                     this.programView = null;
 
-                    this._createControls();
+                    //this._createControls();
                 }
 
                 _createClass(LevelDisplay, [{
-                    key: '_createControls',
-                    value: function _createControls() {
+                    key: 'init',
+                    value: function init() {
 
                         this.programView = new ProgramView(this._layer, layout.MARGIN, layout.MARGIN, this.level.program, layout.PROGRAM_WIDTH, layout.PROGRAM_HEIGHT);
+                    }
+                }, {
+                    key: 'teardown',
+                    value: function teardown() {
+                        this.programView.remove();
                     }
                 }]);
 
@@ -1951,13 +1951,13 @@ System.register('level', ['gui', 'layout', 'editor', 'view', 'core', 'interprete
                     this.palette = null;
                     this.editor = null;
 
-                    this._createControls();
+                    //this._createControls();
                 }
 
                 _createClass(LevelEditor, [{
-                    key: '_createControls',
-                    value: function _createControls() {
-                        _get(Object.getPrototypeOf(LevelEditor.prototype), '_createControls', this).call(this);
+                    key: 'init',
+                    value: function init() {
+                        _get(Object.getPrototypeOf(LevelEditor.prototype), 'init', this).call(this);
 
                         var CONTROL_WIDTH = this.width - layout.CONTROL_X;
 
@@ -1980,6 +1980,22 @@ System.register('level', ['gui', 'layout', 'editor', 'view', 'core', 'interprete
                         this.editor.enable();
                     }
                 }, {
+                    key: 'teardown',
+                    value: function teardown() {
+                        _get(Object.getPrototypeOf(LevelEditor.prototype), 'teardown', this).call(this);
+                        this.palette.remove();
+                        this.tileControl.remove();
+                        this.sizeControls.remove();
+                        this.editor.disable();
+                    }
+                }, {
+                    key: 'setProgram',
+                    value: function setProgram(p) {
+                        this.teardown();
+                        this.level.program = p;
+                        this.init();
+                    }
+                }, {
                     key: 'onVisible',
                     value: function onVisible() {
                         _get(Object.getPrototypeOf(LevelEditor.prototype), 'onVisible', this).call(this);
@@ -1998,13 +2014,16 @@ System.register('level', ['gui', 'layout', 'editor', 'view', 'core', 'interprete
                 }, {
                     key: '_onSizeUpClicked',
                     value: function _onSizeUpClicked() {
-                        this.level.program.expand();
+                        // this.teardown();
+                        // this.level.program = this.level.program.expand();
+                        // this.init();
+                        this.setProgram(this.level.program.expand());
                         radio('editor:whole-program-changed').broadcast({ program: this.level.program, sender: this });
                     }
                 }, {
                     key: '_onSizeDownClicked',
                     value: function _onSizeDownClicked() {
-                        this.level.program.contract();
+                        this.setProgram(this.level.program.contract());
                         radio('editor:whole-program-changed').broadcast({ program: this.level.program, sender: this });
                     }
                 }]);
@@ -3147,7 +3166,6 @@ System.register('program', ['core', 'tmath'], function (_export) {
             cellProps.type = typeMap[original.type];
             cellProps.x = original.x - Math.round(-0.5 * (p.cols - 9) + 8);
             cellProps.y = original.y - Math.round(-0.5 * (p.cols - 9) + 3); // Lol this coordinate system
-            console.log(cellProps);
 
             //console.log(cellProps.type, original.orientation);
             if (cellProps.type.startsWith('Branch')) {
@@ -3331,28 +3349,19 @@ System.register('program', ['core', 'tmath'], function (_export) {
                         var newRows = this.rows + 2;
                         var newCols = this.cols + 2;
 
-                        var newCells = [];
-                        for (var x = 0; x < newCols; ++x) {
-                            newCells.push([]);
-                            for (var y = 0; y < newRows; ++y) {
-                                newCells[x].push(new cellTypes.Empty());
-                            }
-                        }
+                        var p = new Program(newCols, newRows);
 
                         for (var x = 0; x < this.cols; ++x) {
                             for (var y = 0; y < this.rows; ++y) {
                                 var c = this.getCell(x, y);
                                 if (!(c.type == "Start" || c.type == "End" || c.type == "Empty")) {
-                                    newCells[x + 1][y + 1] = c;
+                                    p.setCell(x + 1, y + 1, c.type, c.orientation);
                                 }
                             }
                         }
 
-                        this.rows = newRows;
-                        this.cols = newCols;
-                        this.cells = newCells;
-
-                        this.setDefaultStartEnd();
+                        p.setDefaultStartEnd();
+                        return p;
                     }
                 }, {
                     key: 'contract',
@@ -3361,28 +3370,19 @@ System.register('program', ['core', 'tmath'], function (_export) {
                         var newRows = this.rows - 2;
                         var newCols = this.cols - 2;
 
-                        var newCells = [];
-                        for (var x = 0; x < newCols; ++x) {
-                            newCells.push([]);
-                            for (var y = 0; y < newRows; ++y) {
-                                newCells[x].push(new cellTypes.Empty());
-                            }
-                        }
+                        var p = new Program(newCols, newRows);
 
                         for (var x = 0; x < this.cols - 1; ++x) {
                             for (var y = 0; y < this.rows - 1; ++y) {
                                 var c = this.getCell(x, y);
                                 if (!(c.type == "Start" || c.type == "End" || c.type == "Empty")) {
-                                    newCells[x - 1][y - 1] = c;
+                                    p.setCell(x - 1, y - 1, c.type, c.orientation);
                                 }
                             }
                         }
 
-                        this.rows = newRows;
-                        this.cols = newCols;
-                        this.cells = newCells;
-
-                        this.setDefaultStartEnd();
+                        p.setDefaultStartEnd();
+                        return p;
                     }
                 }]);
 
