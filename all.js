@@ -7,10 +7,56 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
 
     var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+    function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
     function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
     function setViewbox(svgel, x, y, width, height) {
         svgel.setAttribute('viewBox', [x, y, width, height].join(','));
+    }
+
+    function cartesianProduct() {
+        for (var _len = arguments.length, arrays = Array(_len), _key = 0; _key < _len; _key++) {
+            arrays[_key] = arguments[_key];
+        }
+
+        function _inner() {
+            for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+                args[_key2] = arguments[_key2];
+            }
+
+            if (arguments.length > 1) {
+                var _ret = (function () {
+                    var arr2 = args.pop(); // arr of arrs of elems
+                    var arr1 = args.pop(); // arr of elems
+                    return {
+                        v: _inner.apply(undefined, args.concat([arr1.map(function (e1) {
+                            return arr2.map(function (e2) {
+                                return [e1].concat(_toConsumableArray(e2));
+                            });
+                        }).reduce(function (arr, e) {
+                            return arr.concat(e);
+                        }, [])]))
+                    };
+                })();
+
+                if (typeof _ret === 'object') return _ret.v;
+            } else {
+                return args[0];
+            }
+        };
+        return _inner.apply(undefined, arrays.concat([[[]]]));
+    }
+
+    function genStringsOfLength(n) {
+        var arrs = [];
+        for (var i = 0; i < n; i++) {
+            arrs.push(['B', 'R']);
+        }
+        var prod = cartesianProduct.apply(undefined, arrs);
+        return prod.map(function (x) {
+            return x.join('');
+        });
     }
 
     return {
@@ -48,7 +94,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
             PROGRAM_WIDTH = 56 * 9;
             PROGRAM_HEIGHT = PROGRAM_WIDTH;
             CONTROL_X = MARGIN + PROGRAM_WIDTH + MARGIN;
-
+            ;
             App = (function () {
                 function App(width, height) {
                     _classCallCheck(this, App);
@@ -192,13 +238,12 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         var runner = new Interpreter();
                         runner.setProgram(this.levelEditor.level.program);
 
-                        var testVector = [""];
-                        for (var i = 0; i < Math.pow(2, maxLength); i++) {
-                            var s = i.toString(2);
-                            s = s.replace(/0/g, "R");
-                            s = s.replace(/1/g, "B");
-                            testVector.push(s);
+                        var testVector = [];
+                        for (var i = 0; i <= maxLength; i++) {
+                            testVector.push.apply(testVector, _toConsumableArray(genStringsOfLength(i)));
                         }
+
+                        console.log(testVector);
 
                         var failed = [];
 
