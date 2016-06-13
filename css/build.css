@@ -6742,6 +6742,9 @@ td,
 th {
   padding: 0; }
 
+select {
+  color: black; }
+
 ul.controls-desc {
   list-style: none;
   margin-left: 0px; }
@@ -6752,30 +6755,34 @@ ul.controls-desc {
     width: 100%;
     max-height: 100vh; }
 
-.test-results {
+.code-style {
   font-family: monospace;
   font-size: 14px; }
-  .test-results span.test-string, .test-results span.test-success, .test-results span.test-failure {
-    color: black;
-    font-style: normal;
-    font-weight: bold;
-    padding: 5px;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    background-clip: padding-box;
-    display: inline-block;
-    border-style: solid;
-    border-width: 2px;
-    border-radius: 4px; }
-  .test-results span.test-string {
-    background-color: skyblue;
-    border-color: blue; }
-  .test-results span.test-success {
-    background-color: aquamarine;
-    border-color: green; }
-  .test-results span.test-failure {
-    background-color: indianred;
-    border-color: red; }
+
+.test-results span.test-string, .test-results span.test-success, .test-results span.test-failure {
+  color: black;
+  font-style: normal;
+  font-weight: bold;
+  padding: 5px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  background-clip: padding-box;
+  display: inline-block;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 4px; }
+
+.test-results span.test-string {
+  background-color: skyblue;
+  border-color: blue; }
+
+.test-results span.test-success {
+  background-color: aquamarine;
+  border-color: green; }
+
+.test-results span.test-failure {
+  background-color: indianred;
+  border-color: red; }
 
 /*  green: #03ec04 */
 .tile-control-button .bg {

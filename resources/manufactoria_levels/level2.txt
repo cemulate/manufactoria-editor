@@ -1,0 +1,7 @@
+testString = function(input) {
+
+	// Level 2: Accept if string starts with blue, otherwise reject
+
+	return input.startsWith("B");
+
+}

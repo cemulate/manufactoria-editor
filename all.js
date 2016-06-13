@@ -1,9 +1,9 @@
-System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', 'loader', 'editor', 'core', 'gui', 'modal', 'stage', 'level'], function (_export) {
+System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', 'loader', 'editor', 'core', 'gui', 'modal', 'stage', 'level', 'manufactoriaLevels'], function (_export) {
     /*global radio */
 
     'use strict';
 
-    var program, Interpreter, graphics, view, tmath, loader, editor, core, Palette, TileControl, PlayControl, Modal, Stage, LevelEditor, LevelRunner, Level, MARGIN, PROGRAM_WIDTH, PROGRAM_HEIGHT, CONTROL_X, mhelper, App;
+    var program, Interpreter, graphics, view, tmath, loader, editor, core, Palette, TileControl, PlayControl, Modal, Stage, LevelEditor, LevelRunner, Level, manufactoriaLevels, MARGIN, PROGRAM_WIDTH, PROGRAM_HEIGHT, CONTROL_X, mhelper, App;
 
     var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -88,6 +88,8 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
             LevelEditor = _level.LevelEditor;
             LevelRunner = _level.LevelRunner;
             Level = _level.Level;
+        }, function (_manufactoriaLevels) {
+            manufactoriaLevels = _manufactoriaLevels['default'];
         }],
         execute: function () {
             MARGIN = 10;
@@ -184,7 +186,14 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         this.specEditor = ace.edit("spec-editor");
                         this.specEditor.setTheme("ace/theme/twilight");
                         this.specEditor.session.setMode("ace/mode/javascript");
-                        this.specEditor.setValue('testString = function(input) {\n    // Input is a string of B\'s and R\'s\n    // Return true or false\n    // For input-output problems, return a string representing the correct state of the tape after the program has run\n    // An \'mhelper\' object is available with the following functions:\n    //     mhelper.tapeToNumber(s): Returns the value of the tape as a number, using the convention 0=R, B=1\n    //     mhelper.numberTotape(n): Returns a tape representing a number, using the convention 0=R, B=1\n}');
+                        this.specEditor.setValue('testString = function(input) {\n    // Input is a string of B\'s and R\'s\n    // Return true or false\n    // For input-output problems, return a string representing the correct state of the tape after the program has run\n    // An \'mhelper\' object is available with the following functions:\n    //     mhelper.tapeToNumber(s): Returns the value of the tape as a number, using the convention 0=R, B=1\n    //     mhelper.numberTotape(n): Returns a tape representing a number, using the convention 0=R, B=1\n}', -1);
+
+                        this.populateSetLevels();
+
+                        $("#test-select").on("change", function (e) {
+                            var n = $(e.target).val();
+                            if (n != "blank") _this.loadSetLevel(parseInt(n));
+                        });
                     }
                 }, {
                     key: 'clearProgramGeneratedAndLoadStrings',
@@ -237,6 +246,44 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         }
                     }
                 }, {
+                    key: 'populateSetLevels',
+                    value: function populateSetLevels() {
+                        var _iteratorNormalCompletion = true;
+                        var _didIteratorError = false;
+                        var _iteratorError = undefined;
+
+                        try {
+                            for (var _iterator = manufactoriaLevels[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                                var level = _step.value;
+
+                                $("#test-select").append($("<option>").attr("value", level.number.toString()).html("Level " + level.number + " (" + level.name + ")"));
+                            }
+                        } catch (err) {
+                            _didIteratorError = true;
+                            _iteratorError = err;
+                        } finally {
+                            try {
+                                if (!_iteratorNormalCompletion && _iterator['return']) {
+                                    _iterator['return']();
+                                }
+                            } finally {
+                                if (_didIteratorError) {
+                                    throw _iteratorError;
+                                }
+                            }
+                        }
+                    }
+                }, {
+                    key: 'loadSetLevel',
+                    value: function loadSetLevel(n) {
+                        var level = manufactoriaLevels.find(function (x) {
+                            return x.number == n;
+                        });
+                        if (level == null) return;
+                        this.specEditor.setValue(level.testFunction, -1);
+                        $("#test-select").val("blank");
+                    }
+                }, {
                     key: 'testProgram',
                     value: function testProgram() {
 
@@ -259,13 +306,13 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
 
                         var failed = [];
 
-                        var _iteratorNormalCompletion = true;
-                        var _didIteratorError = false;
-                        var _iteratorError = undefined;
+                        var _iteratorNormalCompletion2 = true;
+                        var _didIteratorError2 = false;
+                        var _iteratorError2 = undefined;
 
                         try {
-                            for (var _iterator = testVector[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                                var t = _step.value;
+                            for (var _iterator2 = testVector[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                                var t = _step2.value;
 
                                 var inputTape = new core.Tape();
                                 inputTape.setFromString(t);
@@ -291,16 +338,16 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                                 }
                             }
                         } catch (err) {
-                            _didIteratorError = true;
-                            _iteratorError = err;
+                            _didIteratorError2 = true;
+                            _iteratorError2 = err;
                         } finally {
                             try {
-                                if (!_iteratorNormalCompletion && _iterator['return']) {
-                                    _iterator['return']();
+                                if (!_iteratorNormalCompletion2 && _iterator2['return']) {
+                                    _iterator2['return']();
                                 }
                             } finally {
-                                if (_didIteratorError) {
-                                    throw _iteratorError;
+                                if (_didIteratorError2) {
+                                    throw _iteratorError2;
                                 }
                             }
                         }
@@ -320,13 +367,13 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         if (failed.length == 0) {
                             $("#test-results").append($("<span>").addClass("test-success").html("Programs match behavior on all tested strings."));
                         } else {
-                            var _iteratorNormalCompletion2 = true;
-                            var _didIteratorError2 = false;
-                            var _iteratorError2 = undefined;
+                            var _iteratorNormalCompletion3 = true;
+                            var _didIteratorError3 = false;
+                            var _iteratorError3 = undefined;
 
                             try {
-                                for (var _iterator2 = failed[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                                    var f = _step2.value;
+                                for (var _iterator3 = failed[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                                    var f = _step3.value;
 
                                     var string = "Failed on input string: " + f.input;
                                     $("#test-results").append($("<span>").addClass("test-failure").html(string));
@@ -339,16 +386,16 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                                     $("#test-results").append($("<br>"));
                                 }
                             } catch (err) {
-                                _didIteratorError2 = true;
-                                _iteratorError2 = err;
+                                _didIteratorError3 = true;
+                                _iteratorError3 = err;
                             } finally {
                                 try {
-                                    if (!_iteratorNormalCompletion2 && _iterator2['return']) {
-                                        _iterator2['return']();
+                                    if (!_iteratorNormalCompletion3 && _iterator3['return']) {
+                                        _iterator3['return']();
                                     }
                                 } finally {
-                                    if (_didIteratorError2) {
-                                        throw _iteratorError2;
+                                    if (_didIteratorError3) {
+                                        throw _iteratorError3;
                                     }
                                 }
                             }
@@ -2755,6 +2802,27 @@ System.register('loader', ['core', 'codeCell', 'tmath', 'program'], function (_e
             });
         }
     };
+});
+System.register("manufactoriaLevels", [], function (_export) {
+	"use strict";
+
+	var manufactoriaLevels, level1, level2, level3;
+	return {
+		setters: [],
+		execute: function () {
+			manufactoriaLevels = [];
+
+			_export("default", manufactoriaLevels);
+
+			level1 = "testString = function(input) {\n\n\t// Accept everything\n\n\treturn true;\n\n}";
+			level2 = "testString = function(input) {\n\n\t// Accept strings that start with blue\n\n\treturn input.startsWith(\"B\");\n\n}";
+			level3 = "testString = function(input) {\n\n\t// Accept if there are three or more blues\n\n\tvar b = 0;\n\tfor (var c of input) {\n\t\tif (c == \"B\") b += 1;\n\t}\n\n\treturn (b >= 3);\n\n}";
+
+			manufactoriaLevels.push({ number: 1, name: "Robotoast!", testFunction: level1 });
+			manufactoriaLevels.push({ number: 2, name: "Robocoffee!", testFunction: level2 });
+			manufactoriaLevels.push({ number: 3, name: "Robolamp!", testFunction: level3 });
+		}
+	};
 });
 System.register("modal", [], function (_export) {
     /*global Snap, mina */
