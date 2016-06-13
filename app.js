@@ -25,6 +25,30 @@ function setViewbox(svgel, x, y, width, height) {
     svgel.setAttribute('viewBox', [x, y, width, height].join(','));
 }
 
+function cartesianProduct(...arrays) {
+    function _inner(...args) {
+		if (arguments.length > 1) {
+			let arr2 = args.pop(); // arr of arrs of elems
+			let arr1 = args.pop(); // arr of elems
+			return _inner(...args,
+  			arr1.map(e1 => arr2.map(e2 => [e1, ...e2]))
+  			    .reduce((arr, e) => arr.concat(e), []));
+		} else {
+			return args[0];
+		}
+	};
+	return _inner(...arrays, [[]]);
+};
+
+function genStringsOfLength(n) {
+    var arrs = [];
+    for (var i = 0; i < n; i ++) {
+        arrs.push(['B', 'R']);
+    }
+    var prod = cartesianProduct(...arrs);
+    return prod.map(x => x.join(''));
+}
+
 class App {
     constructor(width, height) {
         this.levelEditor = null;
@@ -160,13 +184,12 @@ class App {
         var runner = new Interpreter();
         runner.setProgram(this.levelEditor.level.program);
 
-        var testVector = [""];
-        for (var i = 0; i < Math.pow(2, maxLength); i ++) {
-            var s = i.toString(2);
-            s = s.replace(/0/g, "R");
-            s = s.replace(/1/g, "B");
-            testVector.push(s);
+        var testVector = [];
+        for (var i = 0; i <= maxLength; i ++) {
+            testVector.push(...genStringsOfLength(i));
         }
+
+        console.log(testVector);
 
         var failed = [];
 
