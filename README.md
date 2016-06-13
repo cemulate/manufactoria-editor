@@ -25,12 +25,12 @@ Consider Manufactoria level 25 (Roborockets!).
 The condition is: Swap red for blue, and blue for red.
 This is an input-output problem, so we could write:
 
-testString = function(input) {
-	var s = input.replace(/B/g, "X");
-	s = s.replace(/R/g, "B");
-	s = s.replace(/X/g, "R");
-	return s;
-}
+	testString = function(input) {
+		var s = input.replace(/B/g, "X");
+		s = s.replace(/R/g, "B");
+		s = s.replace(/X/g, "R");
+		return s;
+	}
 
 And a correct Manufactoria implementation can be loaded with the following URL:
 
