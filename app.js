@@ -49,6 +49,20 @@ function genStringsOfLength(n) {
     return prod.map(x => x.join(''));
 }
 
+var mhelper = {
+    tapeToNumber: function(input) {
+        var s = input.replace(/R/g, "0");
+        s = s.replace(/B/g, "1");
+        return parseInt(s, 2);
+    },
+    numberToTape: function(input) {
+        var b = input.toString(2);
+        var s = b.replace(/0/g, "R");
+        s = s.replace(/1/g, "B");
+        return s;
+    }
+}
+
 class App {
     constructor(width, height) {
         this.levelEditor = null;
@@ -114,14 +128,12 @@ class App {
         this.specEditor.setTheme("ace/theme/twilight");
         this.specEditor.session.setMode("ace/mode/javascript");
         this.specEditor.setValue(`testString = function(input) {
-    // input is a string of B's and R's
-    // return true or false
-    // for input-output problems, return a string representing the correct state of the tape after the program has run
-
-    // Example for Manufactoria level 6 (Robocats!)
-    // Manufactoria implementation can be loaded with the following URL:
-    // http://pleasingfungus.com/Manufactoria/?lvl=6&code=c11:5f2;p12:5f7;p13:5f7;p14:5f6;c12:4f3;c14:4f3;c14:6f0;c13:6f0;i12:6f6;c11:6f1;c15:5f3;c15:6f3;c15:7f3;c15:8f3;c15:9f3;c15:10f3;c15:11f0;c14:11f0;c13:11f0;
-    return input.endsWith("BB");
+    // Input is a string of B's and R's
+    // Return true or false
+    // For input-output problems, return a string representing the correct state of the tape after the program has run
+    // An 'mhelper' object is available with the following functions:
+    //     mhelper.tapeToNumber(s): Returns the value of the tape as a number, using the convention 0=R, B=1
+    //     mhelper.numberTotape(n): Returns a tape representing a number, using the convention 0=R, B=1
 }`);
 
     }
@@ -176,6 +188,7 @@ class App {
         var specFunction = this.specEditor.getValue();
 
         var testString;
+        console.log(mhelper);
         eval(specFunction);
 
         var maxLength = parseInt($("#max-length").val());
@@ -188,8 +201,6 @@ class App {
         for (var i = 0; i <= maxLength; i ++) {
             testVector.push(...genStringsOfLength(i));
         }
-
-        console.log(testVector);
 
         var failed = [];
 
