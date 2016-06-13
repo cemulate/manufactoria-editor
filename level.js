@@ -24,10 +24,10 @@ class LevelDisplay extends BaseControl {
         this.level = level;
         this.programView = null;
 
-        this._createControls();
+        //this._createControls();
     }
 
-    _createControls() {
+    init() {
 
         this.programView = new ProgramView(
             this._layer,
@@ -36,6 +36,10 @@ class LevelDisplay extends BaseControl {
             layout.PROGRAM_WIDTH,
             layout.PROGRAM_HEIGHT
         );
+    }
+
+    teardown() {
+        this.programView.remove();
     }
 }
 
@@ -46,11 +50,11 @@ export class LevelEditor extends LevelDisplay {
         this.palette = null;
         this.editor = null;
 
-        this._createControls();
+        //this._createControls();
     }
 
-    _createControls() {
-        super._createControls();
+    init() {
+        super.init();
 
         const CONTROL_WIDTH = this.width - layout.CONTROL_X;
 
@@ -86,6 +90,20 @@ export class LevelEditor extends LevelDisplay {
         this.editor.enable();
     }
 
+    teardown() {
+        super.teardown();
+        this.palette.remove();
+        this.tileControl.remove();
+        this.sizeControls.remove();
+        this.editor.disable();
+    }
+
+    setProgram(p) {
+        this.teardown();
+        this.level.program = p;
+        this.init();
+    }
+
     onVisible() {
         super.onVisible();
 
@@ -101,12 +119,15 @@ export class LevelEditor extends LevelDisplay {
     }
 
     _onSizeUpClicked() {
-        this.level.program.expand();
+        // this.teardown();
+        // this.level.program = this.level.program.expand();
+        // this.init();
+        this.setProgram(this.level.program.expand());
         radio('editor:whole-program-changed').broadcast({program: this.level.program, sender: this});
     }
 
     _onSizeDownClicked() {
-        this.level.program.contract();
+        this.setProgram(this.level.program.contract());
         radio('editor:whole-program-changed').broadcast({program: this.level.program, sender: this});
     }
 };

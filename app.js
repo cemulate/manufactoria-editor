@@ -27,7 +27,7 @@ function setViewbox(svgel, x, y, width, height) {
 
 class App {
     constructor(width, height) {
-        this.program = null;
+        this.levelEditor = null;
         this.interpreter = null;
         this.taggle = null;
         this.canvasSize = {
@@ -57,7 +57,19 @@ class App {
             // fill in start and end with defaults
             tempProgram.setDefaultStartEnd();
 
-            this.setToProgram(tempProgram);
+            var level = new Level(
+                'Test',
+                tempProgram,
+                [{accept: true, input: new core.Tape(), output: new core.Tape(), limit: 0}]
+            );
+            this.stage.clear();
+
+            var ed = new LevelEditor(this.paper, 0, 0, this.canvasSize.width, this.canvasSize.height, level);
+            ed.init();
+            this.stage.push(ed);
+
+            this.levelEditor = ed;
+
             this.clearProgramGeneratedAndLoadStrings();
         });
 
@@ -88,10 +100,6 @@ class App {
     return input.endsWith("BB");
 }`);
 
-        radio('editor:whole-program-changed').subscribe((info) => {
-            console.log(info.program);
-            this.setToProgram(info.program);
-        });
     }
 
     clearProgramGeneratedAndLoadStrings() {
@@ -104,7 +112,7 @@ class App {
               programString = jsonForm.find('input').val().trim();
         const prog = loader.jsonToProgram(JSON.parse(programString));
         if (prog) {
-            this.setToProgram(prog);
+            this.levelEditor.setProgram(prog);
             this.clearProgramGeneratedAndLoadStrings();
         } else {
             console.log('Unable to load program string');
@@ -117,7 +125,7 @@ class App {
               programString = manufactoriaForm.find('input').val().trim();
         const prog = program.readLegacyProgramString(programString);
         if (prog) {
-            this.setToProgram(prog);
+            this.levelEditor.setProgram(prog);
             this.clearProgramGeneratedAndLoadStrings();
         } else {
             console.log('Unable to load program string');
@@ -126,35 +134,17 @@ class App {
     }
 
     generateJson() {
-        if (this.program != null) {
-            var json = loader.programToJson(this.program);
+        if (this.levelEditor.level.program != null) {
+            var json = loader.programToJson(this.levelEditor.level.program);
             $('#json-form').find('input').val(JSON.stringify(json));
         }
     }
 
     generateManufactoria() {
-        if (this.program != null) {
-            var str = program.generateLegacyProgramString(this.program);
+        if (this.levelEditor.level.program != null) {
+            var str = program.generateLegacyProgramString(this.levelEditor.level.program);
             $('#manufactoria-form').find('input').val(str);
         }
-    }
-
-    setToProgram(prog) {
-        const level = new Level(
-            'Test',
-            prog,
-            [{accept: true, input: new core.Tape(), output: new core.Tape(), limit: 0}]
-        );
-        this.stage.clear();
-        this.stage.push(new LevelEditor(
-                this.paper,
-                0, 0,
-                this.canvasSize.width,
-                this.canvasSize.height,
-                level
-            )
-        );
-        this.program = prog;
     }
 
     testProgram() {
@@ -168,7 +158,7 @@ class App {
         var hangNumber = parseInt($("#hang-number").val());
 
         var runner = new Interpreter();
-        runner.setProgram(this.program);
+        runner.setProgram(this.levelEditor.level.program);
 
         var testVector = [""];
         for (var i = 0; i < Math.pow(2, maxLength); i ++) {

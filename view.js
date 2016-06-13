@@ -397,7 +397,7 @@ export class ProgramView {
 
         this.calculateTransform();
 
-        const binding = this.program.changed.add(this.updateCell);
+        var binding = this.program.changed.add(this.updateCell);
         binding.context = this;
     }
 

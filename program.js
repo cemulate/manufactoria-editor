@@ -89,28 +89,19 @@ class Program {
         var newRows = this.rows + 2;
         var newCols = this.cols + 2;
 
-        var newCells = [];
-        for (let x = 0; x < newCols; ++x) {
-            newCells.push([]);
-            for (let y = 0; y < newRows; ++y) {
-                newCells[x].push(new cellTypes.Empty());
-            }
-        }
+        var p = new Program(newCols, newRows);
 
         for (let x = 0; x < this.cols; ++x) {
             for (let y = 0; y < this.rows; ++y) {
                 var c = this.getCell(x, y);
                 if (!(c.type == "Start" || c.type == "End" || c.type == "Empty")) {
-                    newCells[x+1][y+1] = c;
+                    p.setCell(x+1, y+1, c.type, c.orientation);
                 }
             }
         }
 
-        this.rows = newRows;
-        this.cols = newCols;
-        this.cells = newCells;
-
-        this.setDefaultStartEnd();
+        p.setDefaultStartEnd();
+        return p;
     }
 
     contract() {
@@ -118,28 +109,19 @@ class Program {
         var newRows = this.rows - 2;
         var newCols = this.cols - 2;
 
-        var newCells = [];
-        for (let x = 0; x < newCols; ++x) {
-            newCells.push([]);
-            for (let y = 0; y < newRows; ++y) {
-                newCells[x].push(new cellTypes.Empty());
-            }
-        }
+        var p = new Program(newCols, newRows);
 
         for (let x = 0; x < this.cols - 1; ++x) {
             for (let y = 0; y < this.rows - 1; ++y) {
                 var c = this.getCell(x, y);
                 if (!(c.type == "Start" || c.type == "End" || c.type == "Empty")) {
-                    newCells[x-1][y-1] = c;
+                    p.setCell(x-1, y-1, c.type, c.orientation);
                 }
             }
         }
 
-        this.rows = newRows;
-        this.cols = newCols;
-        this.cells = newCells;
-
-        this.setDefaultStartEnd();
+        p.setDefaultStartEnd();
+        return p;
     }
 };
 
@@ -208,7 +190,6 @@ function readLegacyProgramString(url) {
         cellProps.type = typeMap[original.type];
         cellProps.x = original.x - Math.round(-0.5 * (p.cols - 9) + 8);
         cellProps.y = original.y - Math.round(-0.5 * (p.cols - 9) + 3); // Lol this coordinate system
-        console.log(cellProps);
 
         //console.log(cellProps.type, original.orientation);
         if (cellProps.type.startsWith('Branch')) {
