@@ -206,13 +206,18 @@ class Editor {
 
             if (curCell.type != 'Start' && curCell.type != 'End') {
 
-                this.programView.program.setCell(data.cell.x,
-                                                 data.cell.y,
-                                                 this.tileControl.currentTile,
-                                                 orientationByName(
-                                                     this.tileControl.currentOrientation,
-                                                     this.tileControl.mirror)
-                                                );
+                this.programView.program.setCell(
+                    data.cell.x,
+                    data.cell.y,
+                    this.tileControl.currentTile,
+                    orientationByName(this.tileControl.currentOrientation, this.tileControl.mirror)
+                );
+
+                // Mirror mode only persists for one placing
+                if (this.tileControl.mirror) {
+                    this.tileControl.onMirror();
+                }
+
             }
         } else if (this.state == IDLE) {
             let cellIndex = {x: data.cell.x, y: data.cell.y},
@@ -350,16 +355,15 @@ class Editor {
                 this.highlightedCell.x,
                 this.highlightedCell.y,
                 this.tileControl.currentTile,
-                orientationByName(
-                    this.tileControl.currentOrientation,
-                    this.tileControl.mirror)
+                orientationByName(this.tileControl.currentOrientation, this.tileControl.mirror)
             );
         }
     }
 
     onMirror(data) {
         if (this.state == PLACING || this.state == INPLACE) {
-            this.tileControl.onMirror();
+            var noMirror = (this.tileControl.currentTile == "Conveyor" || this.tileControl.currentTile == "CrossConveyor");
+            if (!noMirror) this.tileControl.onMirror();
         } else if (this.state == IDLE && data && data.x && data.y) {
             // see if we are hovering over the programview
             var el = Snap.getElementByPoint(data.x, data.y);
@@ -371,7 +375,8 @@ class Editor {
                     type = info.cell.type,
                     x = info.x,
                     y = info.y;
-                o = tmath.Mat2x2.kMIR.compose(o);
+                var noMirror = (type == "Conveyor" || type == "CrossConveyor");
+                o = noMirror ? o : tmath.Mat2x2.kMIR.compose(o);
                 if (type != 'Start' && type != 'End' && type != 'Empty')
                     this.programView.program.setCell(x, y, type, o);
             }
