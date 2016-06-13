@@ -3,7 +3,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
 
     'use strict';
 
-    var program, Interpreter, graphics, view, tmath, loader, editor, core, Palette, TileControl, PlayControl, Modal, Stage, LevelEditor, LevelRunner, Level, MARGIN, PROGRAM_WIDTH, PROGRAM_HEIGHT, CONTROL_X, App;
+    var program, Interpreter, graphics, view, tmath, loader, editor, core, Palette, TileControl, PlayControl, Modal, Stage, LevelEditor, LevelRunner, Level, MARGIN, PROGRAM_WIDTH, PROGRAM_HEIGHT, CONTROL_X, mhelper, App;
 
     var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -94,7 +94,20 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
             PROGRAM_WIDTH = 56 * 9;
             PROGRAM_HEIGHT = PROGRAM_WIDTH;
             CONTROL_X = MARGIN + PROGRAM_WIDTH + MARGIN;
-            ;
+            ;mhelper = {
+                tapeToNumber: function tapeToNumber(input) {
+                    var s = input.replace(/R/g, "0");
+                    s = s.replace(/B/g, "1");
+                    return parseInt(s, 2);
+                },
+                numberToTape: function numberToTape(input) {
+                    var b = input.toString(2);
+                    var s = b.replace(/0/g, "R");
+                    s = s.replace(/1/g, "B");
+                    return s;
+                }
+            };
+
             App = (function () {
                 function App(width, height) {
                     _classCallCheck(this, App);
@@ -171,7 +184,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         this.specEditor = ace.edit("spec-editor");
                         this.specEditor.setTheme("ace/theme/twilight");
                         this.specEditor.session.setMode("ace/mode/javascript");
-                        this.specEditor.setValue('testString = function(input) {\n    // input is a string of B\'s and R\'s\n    // return true or false\n    // for input-output problems, return a string representing the correct state of the tape after the program has run\n\n    // Example for Manufactoria level 6 (Robocats!)\n    // Manufactoria implementation can be loaded with the following URL:\n    // http://pleasingfungus.com/Manufactoria/?lvl=6&code=c11:5f2;p12:5f7;p13:5f7;p14:5f6;c12:4f3;c14:4f3;c14:6f0;c13:6f0;i12:6f6;c11:6f1;c15:5f3;c15:6f3;c15:7f3;c15:8f3;c15:9f3;c15:10f3;c15:11f0;c14:11f0;c13:11f0;\n    return input.endsWith("BB");\n}');
+                        this.specEditor.setValue('testString = function(input) {\n    // Input is a string of B\'s and R\'s\n    // Return true or false\n    // For input-output problems, return a string representing the correct state of the tape after the program has run\n    // An \'mhelper\' object is available with the following functions:\n    //     mhelper.tapeToNumber(s): Returns the value of the tape as a number, using the convention 0=R, B=1\n    //     mhelper.numberTotape(n): Returns a tape representing a number, using the convention 0=R, B=1\n}');
                     }
                 }, {
                     key: 'clearProgramGeneratedAndLoadStrings',
@@ -230,6 +243,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         var specFunction = this.specEditor.getValue();
 
                         var testString;
+                        console.log(mhelper);
                         eval(specFunction);
 
                         var maxLength = parseInt($("#max-length").val());
@@ -242,8 +256,6 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         for (var i = 0; i <= maxLength; i++) {
                             testVector.push.apply(testVector, _toConsumableArray(genStringsOfLength(i)));
                         }
-
-                        console.log(testVector);
 
                         var failed = [];
 
