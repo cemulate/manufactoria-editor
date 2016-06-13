@@ -1,5 +1,9 @@
 $default: #eef;
 
+select {
+    color: black;
+}
+
 ul.controls-desc{
     list-style: none;
     margin-left: 0px;
@@ -14,9 +18,12 @@ ul.controls-desc{
     }
 }
 
-.test-results {
+.code-style {
     font-family: monospace;
     font-size: 14px;
+}
+
+.test-results {
 
     span.test-string, span.test-success, span.test-failure {
         color: black;

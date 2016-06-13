@@ -16,6 +16,8 @@ import {LevelEditor,
         LevelRunner,
         Level} from 'level';
 
+import manufactoriaLevels from 'manufactoriaLevels';
+
 const MARGIN = 10, // Space between elements
       PROGRAM_WIDTH = 56 * 9, // program view width, not to exceed
       PROGRAM_HEIGHT = PROGRAM_WIDTH,
@@ -134,7 +136,14 @@ class App {
     // An 'mhelper' object is available with the following functions:
     //     mhelper.tapeToNumber(s): Returns the value of the tape as a number, using the convention 0=R, B=1
     //     mhelper.numberTotape(n): Returns a tape representing a number, using the convention 0=R, B=1
-}`);
+}`, -1);
+
+        this.populateSetLevels();
+
+        $("#test-select").on("change", e => {
+            var n = $(e.target).val();
+            if (n != "blank") this.loadSetLevel(parseInt(n));
+        });
 
     }
 
@@ -181,6 +190,19 @@ class App {
             var str = program.generateLegacyProgramString(this.levelEditor.level.program);
             $('#manufactoria-form').find('input').val(str);
         }
+    }
+
+    populateSetLevels() {
+        for (var level of manufactoriaLevels) {
+            $("#test-select").append($("<option>").attr("value", level.number.toString()).html("Level " + level.number + " (" + level.name + ")"));
+        }
+    }
+
+    loadSetLevel(n) {
+        var level = manufactoriaLevels.find(x => x.number == n);
+        if (level == null) return;
+        this.specEditor.setValue(level.testFunction, -1);
+        $("#test-select").val("blank");
     }
 
     testProgram() {
