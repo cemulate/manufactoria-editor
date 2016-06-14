@@ -209,10 +209,6 @@ class App {
 
         var specFunction = this.specEditor.getValue();
 
-        var testString;
-        console.log(mhelper);
-        eval(specFunction);
-
         var maxLength = parseInt($("#max-length").val());
         var hangNumber = parseInt($("#hang-number").val());
 
@@ -224,9 +220,16 @@ class App {
             testVector.push(...genStringsOfLength(i));
         }
 
+        var testString;
+        eval(specFunction);
+
         var failed = [];
 
         for (var t of testVector) {
+
+            var specResult = testString(t);
+            if (specResult == null) continue; // Skip test
+
             var inputTape = new core.Tape();
             inputTape.setFromString(t);
 
@@ -239,7 +242,6 @@ class App {
             }
 
             var pass;
-            var specResult = testString(t);
 
             if (typeof(specResult) == "boolean") {
                 pass = (specResult == runner.accept)

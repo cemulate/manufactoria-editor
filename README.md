@@ -35,3 +35,22 @@ This is an input-output problem, so we could write:
 And a correct Manufactoria implementation can be loaded with the following URL:
 
     http://pleasingfungus.com/Manufactoria/?lvl=32&code=b11:6f2;g12:5f3;p12:6f7;q12:7f6;c12:8f3;c12:9f3;r13:6f0&ctm=Program;(Generated);:*;7;3;0
+
+## Advanced
+
+If an input-output problem gaurantees only a particular kind of input tape, such as even-length only, you can return null from `testString` and that test will be skipped/disregarded.
+For example, consider level 19, whose description is "Put a yellow in the middle of the (even-length) string".
+We could write:
+
+	testString = function(input) {
+
+		// Put a yellow in the middle of the even-length string
+
+		if (input.length == 0) return "Y";
+		if (input.length % 2 != 0) return null; // Odd-length strings are not valid input
+
+		var half = input.length/2;
+
+		return input.substr(0, half) + "Y" + input.substr(half, half);
+
+	}

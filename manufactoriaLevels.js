@@ -203,18 +203,18 @@ var level18 = `testString = function(input) {
 }`;
 
 // This one needs some more infrastructure to support
-// var level19 = `testString = function(input) {
-//
-// 	// Put a yellow in the middle of the even-length string
-//
-// 	if (input.length == 0) return "Y";
-// 	if (input.length % 2 != 0) return false;
-//
-// 	var half = input.length/2;
-//
-// 	return (input.substr(0, half) == input.substr(half, half));
-//
-// }`;
+var level19 = `testString = function(input) {
+
+	// Put a yellow in the middle of the even-length string
+
+	if (input.length == 0) return "Y";
+	if (input.length % 2 != 0) return null;
+
+	var half = input.length/2;
+
+	return input.substr(0, half) + "Y" + input.substr(half, half);
+
+}`;
 
 var level20 = `testString = function(input) {
 
@@ -248,5 +248,5 @@ manufactoriaLevels.push({number: 15, name: "Robotanks!", testFunction: level15})
 manufactoriaLevels.push({number: 16, name: "Robospies!", testFunction: level16});
 manufactoriaLevels.push({number: 17, name: "Androids!", testFunction: level17});
 manufactoriaLevels.push({number: 18, name: "Robo-children!", testFunction: level18});
-//manufactoriaLevels.push({number: 19, name: "Police!", testFunction: level19});
+manufactoriaLevels.push({number: 19, name: "Police!", testFunction: level19});
 manufactoriaLevels.push({number: 20, name: "Judiciary!", testFunction: level20});
