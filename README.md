@@ -50,8 +50,10 @@ You may not want to consider the empty string a valid input for numeric problems
 
 ### Invalid test strings
 
-If an input-output problem gaurantees only a particular kind of input tape, such as even-length only, you can return null from `testString` and that test will be skipped/disregarded.
-For example, consider level 19, whose description is "Put a yellow in the middle of the (even-length) string".
+If an input-output problem gaurantees only a particular kind of input tape, you can return `null` from `testString` to completely skip/disregard that test.
+For example, consider level 19, whose description is "Put a yellow in the middle of the (even-length) string". 
+The problem assumes only even-length strings will be given as input.
+We simply return `null` on all odd-length input strings to skip those tests.
 We could write:
 
 	testString = function(input) {
@@ -72,7 +74,7 @@ Another very common use case here is when your program treats the tape as a bina
 ### Fancier test vectors
 
 If you are working on problems that consider non-trivial input strings (containing greens, yellows, etc. or of a particular form), you can directly modify the variable `testVector` anywhere outside the body of `testString`.
-At the point of evaluation, `testVector` is an array containing all the strings that would normally be tested; you can overwrite it completely or modify it in place.
+At the point of evaluation, `testVector` is an array containing all the strings that would normally be tested; you can overwrite it completely or modify/filter it in place.
 The function `genStringsOfLength(n)` is available which will generate possible strings consisting of `B` and `R` of length `n`.
 For example, the last Manufactoria level is to add two numbers represented by strings of blue and red, separated by a green.
 So we might do the following:
@@ -95,11 +97,10 @@ So we might do the following:
 
 ### Testing equivalence as binary numbers
 
-If your program and test function treat the tape as binary number to be operated on, you can specify that equivalence be interpreted as *numeric equivalence* by setting:
+If you would like the output tape from your test function and the output tape from your program to be compared *as numbers*, you can set
 
     numericEquivalence = true;
 
 Anywhere outside the body of `testString`.
-Using this, your manufactoria program may return a string with leading zeroes (`R`s), whereas your test function may not include the leading `R`s because of the way it calculates the answer.
-With `numericEquivalence = true`, the test will still pass.
-For example, the string `RRRB` and `B` will be seen as equal.
+This avoids problems with leading zeroes (`R` characters).
+If your manufactoria program returns the string `RRRB`, and your test function simply returns `B`, they will be compared as equal because they both represent the number `1`.
