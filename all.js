@@ -98,6 +98,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
             CONTROL_X = MARGIN + PROGRAM_WIDTH + MARGIN;
             ;mhelper = {
                 tapeToNumber: function tapeToNumber(input) {
+                    if (input.length == 0) return 0;
                     var s = input.replace(/R/g, "0");
                     s = s.replace(/B/g, "1");
                     return parseInt(s, 2);
@@ -186,7 +187,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         this.specEditor = ace.edit("spec-editor");
                         this.specEditor.setTheme("ace/theme/twilight");
                         this.specEditor.session.setMode("ace/mode/javascript");
-                        this.specEditor.setValue('testString = function(input) {\n    // Input is a string of B\'s and R\'s\n    // Return true or false\n    // For input-output problems, return a string representing the correct state of the tape after the program has run\n    // An \'mhelper\' object is available with the following functions:\n    //     mhelper.tapeToNumber(s): Returns the value of the tape as a number, using the convention 0=R, B=1\n    //     mhelper.numberTotape(n): Returns a tape representing a number, using the convention 0=R, B=1\n}', -1);
+                        this.specEditor.setValue('testString = function(input) {\n    // Input is a string of B\'s and R\'s\n    // Return true or false\n    // For input-output problems, return a string representing the correct state of the tape after the program has run\n\n    return false;\n}', -1);
 
                         this.populateSetLevels();
 
@@ -301,6 +302,7 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         }
 
                         var testString;
+                        var numericEquivalence = false;
                         eval(specFunction);
 
                         var failed = [];
@@ -313,7 +315,14 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                             for (var _iterator2 = testVector[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                                 var t = _step2.value;
 
-                                var specResult = testString(t);
+                                var specResult;
+                                try {
+                                    specResult = testString(t);
+                                } catch (e) {
+                                    this.notifyTestError();
+                                    return;
+                                }
+
                                 if (specResult == null) continue; // Skip test
 
                                 var inputTape = new core.Tape();
@@ -334,7 +343,11 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                                     if (!pass) failed.push({ input: t, correct: specResult, actual: runner.accept });
                                 } else if (typeof specResult == "string") {
                                     var runnerTape = runner.tape.toString();
-                                    pass = specResult == runnerTape;
+                                    if (numericEquivalence) {
+                                        pass = mhelper.tapeToNumber(specResult) == mhelper.tapeToNumber(runnerTape);
+                                    } else {
+                                        pass = specResult == runnerTape;
+                                    }
                                     if (!pass) failed.push({ input: t, correct: specResult, actual: runnerTape });
                                 }
                             }
@@ -354,6 +367,12 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         }
 
                         this.printResults(failed);
+                    }
+                }, {
+                    key: 'notifyTestError',
+                    value: function notifyTestError() {
+                        $("#test-results").empty();
+                        $("#test-results").append($("<span>").addClass("test-failure").html("There was an error in your submitted javascript code"));
                     }
                 }, {
                     key: 'notifyNonHalting',
@@ -2827,16 +2846,16 @@ System.register("manufactoriaLevels", [], function (_export) {
 			level9 = "testString = function(input) {\n\n\t// Replace blue with green, and red with yellow\n\n\tvar r = input.replace(/B/g, \"G\");\n\tr = r.replace(/R/g, \"Y\");\n\treturn r;\n\n}";
 			level10 = "testString = function(input) {\n\n\t// Put a green at the beginning and a yellow at the end\n\n\treturn \"G\" + input + \"Y\";\n\n}";
 			level11 = "testString = function(input) {\n\n\t// With R=0, B=1, accept odd binary strings\n\n\treturn input.endsWith(\"B\");\n\n}";
-			level12 = "testString = function(input) {\n\n\t// With R=0, B=1, return input multiplied by 8\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum = num * 8;\n\treturn mhelper.numberToTape(num);\n\n}";
-			level13 = "testString = function(input) {\n\n\t// With R=0, B=1, return input + 1\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum += 1;\n\treturn mhelper.numberToTape(num);\n\n}";
-			level14 = "testString = function(input) {\n\n\t// With R=0, B=1, subtract 1 from input\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum -= 1;\n\treturn mhelper.numberToTape(num);\n\n}";
-			level15 = "testString = function(input) {\n\n\t// With R=0, B=1, accept values greater than 15\n\n\tvar num = mhelper.tapeToNumber(input);\n\treturn (num > 15);\n\n}";
-			level16 = "testString = function(input) {\n\n\t// With R=0, B=1, accept powers of 4\n\n\tvar num = mhelper.tapeToNumber(input);\n\tvar check = 1;\n\twhile (check < num) {\n\t\tcheck *= 4;\n\t\tif (check == num) return true;\n\t}\n\n\treturn false;\n\n}";
+			level12 = "numericEquivalence = true;\n\ntestString = function(input) {\n\n\t// With R=0, B=1, return input multiplied by 8\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum = num * 8;\n\treturn mhelper.numberToTape(num);\n\n}";
+			level13 = "numericEquivalence = true;\n\ntestString = function(input) {\n\n\t// With R=0, B=1, return input + 1\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum += 1;\n\treturn mhelper.numberToTape(num);\n\n}";
+			level14 = "numericEquivalence = true;\n\ntestString = function(input) {\n\n\t// With R=0, B=1, subtract 1 from input\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum -= 1;\n\treturn mhelper.numberToTape(num);\n\n}";
+			level15 = "testString = function(input) {\n\n\t// With R=0, B=1, accept values greater than 15\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\treturn (num > 15);\n\n}";
+			level16 = "testString = function(input) {\n\n\t// With R=0, B=1, accept powers of 4\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\tvar check = 1;\n\twhile (check < num) {\n\t\tcheck *= 4;\n\t\tif (check == num) return true;\n\t}\n\n\treturn false;\n\n}";
 			level17 = "testString = function(input) {\n\n\t// Accept strings that start with some number of blue, followed by the same number of red\n\n\tvar b = 0, r = 0;\n\tvar onBlue = true;\n\tfor (var c of input) {\n\t\tif (c == \"R\") onBlue = false;\n\t\tif ((onBlue && c == \"R\") || (!onBlue && c == \"B\")) return false;\n\t\tif (c == \"B\") b += 1;\n\t\tif (c == \"R\") r += 1;\n\t}\n\n\treturn (b == r);\n\n}";
 			level18 = "testString = function(input) {\n\n\t// Accept strings that contain an equal amount of blue and red\n\n\tvar b = 0, r = 0;\n\tfor (var c of input) {\n\t\tif (c == \"B\") b += 1;\n\t\tif (c == \"R\") r += 1;\n\t}\n\n\treturn (b == r);\n\n}";
 
 			// This one needs some more infrastructure to support
-			level19 = "testString = function(input) {\n\n\t// Put a yellow in the middle of the even-length string\n\n\tif (input.length == 0) return \"Y\";\n\tif (input.length % 2 != 0) return null;\n\n\tvar half = input.length/2;\n\n\treturn input.substr(0, half) + \"Y\" + input.substr(half, half);\n\n}";
+			level19 = "testString = function(input) {\n\n\t// Put a yellow in the middle of the even-length string\n\n\tif (input.length == 0) return \"Y\";\n\tif (input.length % 2 != 0) return null; // Odd-length strings are not valid input, skip them.\n\n\tvar half = input.length/2;\n\n\treturn input.substr(0, half) + \"Y\" + input.substr(half, half);\n\n}";
 			level20 = "testString = function(input) {\n\n\t// Accept even length strings that repeat half-way through\n\n\tif (input.length == 0) return true;\n\tif (input.length % 2 != 0) return false;\n\n\tvar half = input.length/2;\n\n\treturn (input.substr(0, half) == input.substr(half, half));\n\n}";
 
 			manufactoriaLevels.push({ number: 1, name: "Robotoast!", testFunction: level1 });
