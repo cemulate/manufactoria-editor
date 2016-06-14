@@ -2806,7 +2806,7 @@ System.register('loader', ['core', 'codeCell', 'tmath', 'program'], function (_e
 System.register("manufactoriaLevels", [], function (_export) {
 	"use strict";
 
-	var manufactoriaLevels, level1, level2, level3;
+	var manufactoriaLevels, level1, level2, level3, level4, level4, level5, level6, level7, level8, level9, level10, level11, level12, level13, level14, level15, level16, level17, level18, level20;
 	return {
 		setters: [],
 		execute: function () {
@@ -2814,13 +2814,62 @@ System.register("manufactoriaLevels", [], function (_export) {
 
 			_export("default", manufactoriaLevels);
 
-			level1 = "testString = function(input) {\n\n\t// Accept everything\n\n\treturn true;\n\n}";
+			level1 = "testString = function(input) {\n\n\t// Accept everything (Recommended size limit: 5x5)\n\n\treturn true;\n\n}";
 			level2 = "testString = function(input) {\n\n\t// Accept strings that start with blue\n\n\treturn input.startsWith(\"B\");\n\n}";
-			level3 = "testString = function(input) {\n\n\t// Accept if there are three or more blues\n\n\tvar b = 0;\n\tfor (var c of input) {\n\t\tif (c == \"B\") b += 1;\n\t}\n\n\treturn (b >= 3);\n\n}";
+			level3 = "testString = function(input) {\n\n\t// Accept if string contains three or more blues\n\n\tvar b = 0;\n\tfor (var c of input) {\n\t\tif (c == \"B\") b += 1;\n\t}\n\n\treturn (b >= 3);\n\n}";
+			level4 = "testString = function(input) {\n\n\t// Accept if string contains no red\n\n\treturn (input.indexOf(\"R\") == -1);\n\n}";
+			level4 = "testString = function(input) {\n\n\t// Accept if string contains no red\n\n\treturn (input.indexOf(\"R\") == -1);\n\n}";
+			level5 = "testString = function(input) {\n\n\t// Accept if string has alternating colors\n\n\tif (input.length == 0) return true;\n\n\tvar current = input[0];\n\tfor (var c of input.slice(1)) {\n\t\tif (c == current) return false;\n\t\tcurrent = c;\n\t}\n\n\treturn true;\n\n}";
+			level6 = "testString = function(input) {\n\n\t// Accept if string ends with two blues\n\n\treturn input.endsWith(\"BB\");\n\n}";
+			level7 = "testString = function(input) {\n\n\t// Accept if string begins and ends with same color\n\n\tif (input.length == 0) return true;\n\n\treturn (input[0] == input[input.length - 1]);\n\n}";
+			level8 = "testString = function(input) {\n\n\t// Return input, but with the first symbol at the end\n\n\tif (input.length == 0) return \"\";\n\n\treturn input.slice(1) + input[0];\n\n}";
+			level9 = "testString = function(input) {\n\n\t// Replace blue with green, and red with yellow\n\n\tvar r = input.replace(/B/g, \"G\");\n\tr = r.replace(/R/g, \"Y\");\n\treturn r;\n\n}";
+			level10 = "testString = function(input) {\n\n\t// Put a green at the beginning and a yellow at the end\n\n\treturn \"G\" + input + \"Y\";\n\n}";
+			level11 = "testString = function(input) {\n\n\t// With R=0, B=1, accept odd binary strings\n\n\treturn input.endsWith(\"B\");\n\n}";
+			level12 = "testString = function(input) {\n\n\t// With R=0, B=1, return input multiplied by 8\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum = num * 8;\n\treturn mhelper.numberToTape(num);\n\n}";
+			level13 = "testString = function(input) {\n\n\t// With R=0, B=1, return input + 1\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum += 1;\n\treturn mhelper.numberToTape(num);\n\n}";
+			level14 = "testString = function(input) {\n\n\t// With R=0, B=1, subtract 1 from input\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum -= 1;\n\treturn mhelper.numberToTape(num);\n\n}";
+			level15 = "testString = function(input) {\n\n\t// With R=0, B=1, accept values greater than 15\n\n\tvar num = mhelper.tapeToNumber(input);\n\treturn (num > 15);\n\n}";
+			level16 = "testString = function(input) {\n\n\t// With R=0, B=1, accept powers of 4\n\n\tvar num = mhelper.tapeToNumber(input);\n\tvar check = 1;\n\twhile (check < num) {\n\t\tcheck *= 4;\n\t\tif (check == num) return true;\n\t}\n\n\treturn false;\n\n}";
+			level17 = "testString = function(input) {\n\n\t// Accept strings that start with some number of blue, followed by the same number of red\n\n\tvar b = 0, r = 0;\n\tvar onBlue = true;\n\tfor (var c of input) {\n\t\tif (c == \"R\") onBlue = false;\n\t\tif ((onBlue && c == \"R\") || (!onBlue && c == \"B\")) return false;\n\t\tif (c == \"B\") b += 1;\n\t\tif (c == \"R\") r += 1;\n\t}\n\n\treturn (b == r);\n\n}";
+			level18 = "testString = function(input) {\n\n\t// Accept strings that contain an equal amount of blue and red\n\n\tvar b = 0, r = 0;\n\tfor (var c of input) {\n\t\tif (c == \"B\") b += 1;\n\t\tif (c == \"R\") r += 1;\n\t}\n\n\treturn (b == r);\n\n}";
+
+			// This one needs some more infrastructure to support
+			// var level19 = `testString = function(input) {
+			//
+			// 	// Put a yellow in the middle of the even-length string
+			//
+			// 	if (input.length == 0) return "Y";
+			// 	if (input.length % 2 != 0) return false;
+			//
+			// 	var half = input.length/2;
+			//
+			// 	return (input.substr(0, half) == input.substr(half, half));
+			//
+			// }`;
+
+			level20 = "testString = function(input) {\n\n\t// Accept even length strings that repeat half-way through\n\n\tif (input.length == 0) return true;\n\tif (input.length % 2 != 0) return false;\n\n\tvar half = input.length/2;\n\n\treturn (input.substr(0, half) == input.substr(half, half));\n\n}";
 
 			manufactoriaLevels.push({ number: 1, name: "Robotoast!", testFunction: level1 });
 			manufactoriaLevels.push({ number: 2, name: "Robocoffee!", testFunction: level2 });
 			manufactoriaLevels.push({ number: 3, name: "Robolamp!", testFunction: level3 });
+			manufactoriaLevels.push({ number: 4, name: "Robofish!", testFunction: level4 });
+			manufactoriaLevels.push({ number: 5, name: "Robobugs!", testFunction: level5 });
+			manufactoriaLevels.push({ number: 6, name: "Robocats!", testFunction: level6 });
+			manufactoriaLevels.push({ number: 7, name: "Robobears!", testFunction: level7 });
+			manufactoriaLevels.push({ number: 8, name: "RC Cars!", testFunction: level8 });
+			manufactoriaLevels.push({ number: 9, name: "Robocars!", testFunction: level9 });
+			manufactoriaLevels.push({ number: 10, name: "Robostils!", testFunction: level10 });
+			manufactoriaLevels.push({ number: 11, name: "Milidogs!", testFunction: level11 });
+			manufactoriaLevels.push({ number: 12, name: "Soldiers", testFunction: level12 });
+			manufactoriaLevels.push({ number: 13, name: "Officers!", testFunction: level13 });
+			manufactoriaLevels.push({ number: 14, name: "Generals!", testFunction: level14 });
+			manufactoriaLevels.push({ number: 15, name: "Robotanks!", testFunction: level15 });
+			manufactoriaLevels.push({ number: 16, name: "Robospies!", testFunction: level16 });
+			manufactoriaLevels.push({ number: 17, name: "Androids!", testFunction: level17 });
+			manufactoriaLevels.push({ number: 18, name: "Robo-children!", testFunction: level18 });
+			//manufactoriaLevels.push({number: 19, name: "Police!", testFunction: level19});
+			manufactoriaLevels.push({ number: 20, name: "Judiciary!", testFunction: level20 });
 		}
 	};
 });
