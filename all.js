@@ -289,10 +289,6 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
 
                         var specFunction = this.specEditor.getValue();
 
-                        var testString;
-                        console.log(mhelper);
-                        eval(specFunction);
-
                         var maxLength = parseInt($("#max-length").val());
                         var hangNumber = parseInt($("#hang-number").val());
 
@@ -304,6 +300,9 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                             testVector.push.apply(testVector, _toConsumableArray(genStringsOfLength(i)));
                         }
 
+                        var testString;
+                        eval(specFunction);
+
                         var failed = [];
 
                         var _iteratorNormalCompletion2 = true;
@@ -313,6 +312,9 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         try {
                             for (var _iterator2 = testVector[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
                                 var t = _step2.value;
+
+                                var specResult = testString(t);
+                                if (specResult == null) continue; // Skip test
 
                                 var inputTape = new core.Tape();
                                 inputTape.setFromString(t);
@@ -326,7 +328,6 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                                 }
 
                                 var pass;
-                                var specResult = testString(t);
 
                                 if (typeof specResult == "boolean") {
                                     pass = specResult == runner.accept;
@@ -2806,7 +2807,7 @@ System.register('loader', ['core', 'codeCell', 'tmath', 'program'], function (_e
 System.register("manufactoriaLevels", [], function (_export) {
 	"use strict";
 
-	var manufactoriaLevels, level1, level2, level3, level4, level4, level5, level6, level7, level8, level9, level10, level11, level12, level13, level14, level15, level16, level17, level18, level20;
+	var manufactoriaLevels, level1, level2, level3, level4, level4, level5, level6, level7, level8, level9, level10, level11, level12, level13, level14, level15, level16, level17, level18, level19, level20;
 	return {
 		setters: [],
 		execute: function () {
@@ -2835,19 +2836,7 @@ System.register("manufactoriaLevels", [], function (_export) {
 			level18 = "testString = function(input) {\n\n\t// Accept strings that contain an equal amount of blue and red\n\n\tvar b = 0, r = 0;\n\tfor (var c of input) {\n\t\tif (c == \"B\") b += 1;\n\t\tif (c == \"R\") r += 1;\n\t}\n\n\treturn (b == r);\n\n}";
 
 			// This one needs some more infrastructure to support
-			// var level19 = `testString = function(input) {
-			//
-			// 	// Put a yellow in the middle of the even-length string
-			//
-			// 	if (input.length == 0) return "Y";
-			// 	if (input.length % 2 != 0) return false;
-			//
-			// 	var half = input.length/2;
-			//
-			// 	return (input.substr(0, half) == input.substr(half, half));
-			//
-			// }`;
-
+			level19 = "testString = function(input) {\n\n\t// Put a yellow in the middle of the even-length string\n\n\tif (input.length == 0) return \"Y\";\n\tif (input.length % 2 != 0) return null;\n\n\tvar half = input.length/2;\n\n\treturn input.substr(0, half) + \"Y\" + input.substr(half, half);\n\n}";
 			level20 = "testString = function(input) {\n\n\t// Accept even length strings that repeat half-way through\n\n\tif (input.length == 0) return true;\n\tif (input.length % 2 != 0) return false;\n\n\tvar half = input.length/2;\n\n\treturn (input.substr(0, half) == input.substr(half, half));\n\n}";
 
 			manufactoriaLevels.push({ number: 1, name: "Robotoast!", testFunction: level1 });
@@ -2868,7 +2857,7 @@ System.register("manufactoriaLevels", [], function (_export) {
 			manufactoriaLevels.push({ number: 16, name: "Robospies!", testFunction: level16 });
 			manufactoriaLevels.push({ number: 17, name: "Androids!", testFunction: level17 });
 			manufactoriaLevels.push({ number: 18, name: "Robo-children!", testFunction: level18 });
-			//manufactoriaLevels.push({number: 19, name: "Police!", testFunction: level19});
+			manufactoriaLevels.push({ number: 19, name: "Police!", testFunction: level19 });
 			manufactoriaLevels.push({ number: 20, name: "Judiciary!", testFunction: level20 });
 		}
 	};
