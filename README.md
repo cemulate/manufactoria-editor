@@ -100,6 +100,6 @@ If your program and test function treat the tape as binary number to be operated
     numericEquivalence = true;
 
 Anywhere outside the body of `testString`.
-Using this, your manufactoria may return a string with leading zeroes (`R`s), whereas your test function may not include the leading `R`s because of the way it calculates.
+Using this, your manufactoria program may return a string with leading zeroes (`R`s), whereas your test function may not include the leading `R`s because of the way it calculates the answer.
 With `numericEquivalence = true`, the test will still pass.
 For example, the string `RRRB` and `B` will be seen as equal.
