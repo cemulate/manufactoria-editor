@@ -208,7 +208,7 @@ var level19 = `testString = function(input) {
 	// Put a yellow in the middle of the even-length string
 
 	if (input.length == 0) return "Y";
-	if (input.length % 2 != 0) return null;
+	if (input.length % 2 != 0) return null; // Odd-length strings are not valid input, skip them.
 
 	var half = input.length/2;
 

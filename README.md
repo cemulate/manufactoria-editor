@@ -36,6 +36,13 @@ And a correct Manufactoria implementation can be loaded with the following URL:
 
     http://pleasingfungus.com/Manufactoria/?lvl=32&code=b11:6f2;g12:5f3;p12:6f7;q12:7f6;c12:8f3;c12:9f3;r13:6f0&ctm=Program;(Generated);:*;7;3;0
 
+---
+
+Also of note, and `mhelper` object is available with the following functions:
+
+* `mhelper.tapeToNumber` converts a tape string to a number interpreting it as binary with the convention `R=0, B=1`
+* `mhelper.numberToTape` converts a number to a tape using the same convention.
+
 ## Advanced
 
 If an input-output problem gaurantees only a particular kind of input tape, such as even-length only, you can return null from `testString` and that test will be skipped/disregarded.
@@ -53,4 +60,28 @@ We could write:
 
 		return input.substr(0, half) + "Y" + input.substr(half, half);
 
+	}
+
+---
+
+If you are working on problems that consider non-trivial input strings (containing greens, yellows, etc. or of a particular form), you can directly modify the variable `testVector` anywhere outside the body of `testString`.
+At the point of evaluation, `testVector` is an array containing all the strings that would normally be tested; you can overwrite it completely or modify it in place.
+The function `genStringsOfLength(n)` is available which will generate possible strings consisting of `B` and `R` of length `n`.
+For example, the last Manufactoria level is to add two numbers represented by strings of blue and red, separated by a green.
+So we might do the following:
+
+	// Construct our test set
+	testVector = [];
+	var a = genStringsOfLength(5);
+	for (var x of a) {
+		for (var y of a) {
+			testVector.push(x + "G" + y);
+		}
+	}
+
+	testString = function(input) {
+		var parts = input.split("G");
+		var a = mhelper.tapeToNumber(parts[0]);
+		var b = mhelper.tapeToNumber(parts[1]);
+		return mhelper.numberToTape(a+b);
 	}
