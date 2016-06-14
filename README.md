@@ -38,7 +38,7 @@ And a correct Manufactoria implementation can be loaded with the following URL:
 
 ---
 
-Also of note, and `mhelper` object is available with the following functions:
+Also of note, an `mhelper` object is available with the following functions:
 
 * `mhelper.tapeToNumber` converts a tape string to a number interpreting it as binary with the convention `R=0, B=1`
 * `mhelper.numberToTape` converts a number to a tape using the same convention.
