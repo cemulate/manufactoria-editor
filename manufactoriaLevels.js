@@ -117,9 +117,13 @@ var level11 = `testString = function(input) {
 
 }`;
 
-var level12 = `testString = function(input) {
+var level12 = `numericEquivalence = true;
+
+testString = function(input) {
 
 	// With R=0, B=1, return input multiplied by 8
+
+	if (input.length == 0) return null; // Empty string not considered valid on numeric problems
 
 	var num = mhelper.tapeToNumber(input);
 	num = num * 8;
@@ -127,9 +131,13 @@ var level12 = `testString = function(input) {
 
 }`;
 
-var level13 = `testString = function(input) {
+var level13 = `numericEquivalence = true;
+
+testString = function(input) {
 
 	// With R=0, B=1, return input + 1
+
+	if (input.length == 0) return null; // Empty string not considered valid on numeric problems
 
 	var num = mhelper.tapeToNumber(input);
 	num += 1;
@@ -137,9 +145,13 @@ var level13 = `testString = function(input) {
 
 }`;
 
-var level14 = `testString = function(input) {
+var level14 = `numericEquivalence = true;
+
+testString = function(input) {
 
 	// With R=0, B=1, subtract 1 from input
+
+	if (input.length == 0) return null; // Empty string not considered valid on numeric problems
 
 	var num = mhelper.tapeToNumber(input);
 	num -= 1;
@@ -151,6 +163,8 @@ var level15 = `testString = function(input) {
 
 	// With R=0, B=1, accept values greater than 15
 
+	if (input.length == 0) return null; // Empty string not considered valid on numeric problems
+
 	var num = mhelper.tapeToNumber(input);
 	return (num > 15);
 
@@ -159,6 +173,8 @@ var level15 = `testString = function(input) {
 var level16 = `testString = function(input) {
 
 	// With R=0, B=1, accept powers of 4
+
+	if (input.length == 0) return null; // Empty string not considered valid on numeric problems
 
 	var num = mhelper.tapeToNumber(input);
 	var check = 1;

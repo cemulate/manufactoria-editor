@@ -53,6 +53,7 @@ function genStringsOfLength(n) {
 
 var mhelper = {
     tapeToNumber: function(input) {
+        if (input.length == 0) return 0;
         var s = input.replace(/R/g, "0");
         s = s.replace(/B/g, "1");
         return parseInt(s, 2);
@@ -133,9 +134,8 @@ class App {
     // Input is a string of B's and R's
     // Return true or false
     // For input-output problems, return a string representing the correct state of the tape after the program has run
-    // An 'mhelper' object is available with the following functions:
-    //     mhelper.tapeToNumber(s): Returns the value of the tape as a number, using the convention 0=R, B=1
-    //     mhelper.numberTotape(n): Returns a tape representing a number, using the convention 0=R, B=1
+
+    return false;
 }`, -1);
 
         this.populateSetLevels();
@@ -221,13 +221,21 @@ class App {
         }
 
         var testString;
+        var numericEquivalence = false;
         eval(specFunction);
 
         var failed = [];
 
         for (var t of testVector) {
 
-            var specResult = testString(t);
+            var specResult;
+            try {
+                specResult = testString(t);
+            } catch (e) {
+                this.notifyTestError();
+                return;
+            }
+
             if (specResult == null) continue; // Skip test
 
             var inputTape = new core.Tape();
@@ -248,12 +256,21 @@ class App {
                 if (!pass) failed.push({input: t, correct: specResult, actual: runner.accept});
             } else if (typeof(specResult) == "string") {
                 var runnerTape = runner.tape.toString();
-                pass = (specResult == runnerTape);
+                if (numericEquivalence) {
+                    pass = (mhelper.tapeToNumber(specResult) == mhelper.tapeToNumber(runnerTape));
+                } else {
+                    pass = (specResult == runnerTape);
+                }
                 if (!pass) failed.push({input: t, correct: specResult, actual: runnerTape});
             }
         }
 
         this.printResults(failed);
+    }
+
+    notifyTestError() {
+        $("#test-results").empty();
+        $("#test-results").append($("<span>").addClass("test-failure").html("There was an error in your submitted javascript code"));
     }
 
     notifyNonHalting(nonHalting) {

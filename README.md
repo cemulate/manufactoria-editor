@@ -43,7 +43,12 @@ Also of note, an `mhelper` object is available with the following functions:
 * `mhelper.tapeToNumber` converts a tape string to a number interpreting it as binary with the convention `R=0, B=1`
 * `mhelper.numberToTape` converts a number to a tape using the same convention.
 
+Note that **by convention**, `mhelper.tapeToNumber` returns `0` on the empty string.
+You may not want to consider the empty string a valid input for numeric problems (see the section on Invalid test strings below).
+
 ## Advanced
+
+### Invalid test strings
 
 If an input-output problem gaurantees only a particular kind of input tape, such as even-length only, you can return null from `testString` and that test will be skipped/disregarded.
 For example, consider level 19, whose description is "Put a yellow in the middle of the (even-length) string".
@@ -62,7 +67,9 @@ We could write:
 
 	}
 
----
+Another very common use case here is when your program treats the tape as a binary number, and you don't want to consider the empty string a valid input.
+
+### Fancier test vectors
 
 If you are working on problems that consider non-trivial input strings (containing greens, yellows, etc. or of a particular form), you can directly modify the variable `testVector` anywhere outside the body of `testString`.
 At the point of evaluation, `testVector` is an array containing all the strings that would normally be tested; you can overwrite it completely or modify it in place.
@@ -85,3 +92,14 @@ So we might do the following:
 		var b = mhelper.tapeToNumber(parts[1]);
 		return mhelper.numberToTape(a+b);
 	}
+
+### Testing equivalence as binary numbers
+
+If your program and test function treat the tape as binary number to be operated on, you can specify that equivalence be interpreted as *numeric equivalence* by setting:
+
+    numericEquivalence = true;
+
+Anywhere outside the body of `testString`.
+Using this, your manufactoria may return a string with leading zeroes (`R`s), whereas your test function may not include the leading `R`s because of the way it calculates.
+With `numericEquivalence = true`, the test will still pass.
+For example, the string `RRRB` and `B` will be seen as equal.
