@@ -42,15 +42,6 @@ function cartesianProduct(...arrays) {
 	return _inner(...arrays, [[]]);
 };
 
-function genStringsOfLength(n) {
-    var arrs = [];
-    for (var i = 0; i < n; i ++) {
-        arrs.push(['B', 'R']);
-    }
-    var prod = cartesianProduct(...arrs);
-    return prod.map(x => x.join(''));
-}
-
 var mhelper = {
     tapeToNumber: function(input) {
         if (input.length == 0) return 0;
@@ -63,6 +54,21 @@ var mhelper = {
         var s = b.replace(/0/g, "R");
         s = s.replace(/1/g, "B");
         return s;
+    },
+    genStringsOfLength: function(n) {
+        var arrs = [];
+        for (var i = 0; i < n; i ++) {
+            arrs.push(['B', 'R']);
+        }
+        var prod = cartesianProduct(...arrs);
+        return prod.map(x => x.join(''));
+    },
+    genStringsUpToLength: function(n) {
+        var strings = [];
+        for (var i = 0; i <= n; i ++) {
+            strings.push(...mhelper.genStringsOfLength(i));
+        }
+        return strings;
     }
 }
 
@@ -215,12 +221,8 @@ class App {
         var runner = new Interpreter();
         runner.setProgram(this.levelEditor.level.program);
 
-        var testVector = [];
-        for (var i = 0; i <= maxLength; i ++) {
-            testVector.push(...genStringsOfLength(i));
-        }
-
-        var testString;
+        var testVector = mhelper.genStringsUpToLength(maxLength);
+        var testString = null;
         var numericEquivalence = false;
         eval(specFunction);
 

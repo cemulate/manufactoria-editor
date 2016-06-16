@@ -40,8 +40,8 @@ And a correct Manufactoria implementation can be loaded with the following URL:
 
 Also of note, an `mhelper` object is available with the following functions:
 
-* `mhelper.tapeToNumber` converts a tape string to a number interpreting it as binary with the convention `R=0, B=1`
-* `mhelper.numberToTape` converts a number to a tape using the same convention.
+* `mhelper.tapeToNumber(tape)` converts a tape string to a number interpreting it as binary with the convention `R=0, B=1`
+* `mhelper.numberToTape(number)` converts a number to a tape using the same convention.
 
 Note that **by convention**, `mhelper.tapeToNumber` returns `0` on the empty string.
 You may not want to consider the empty string a valid input for numeric problems (see the section on Invalid test strings below).
@@ -51,7 +51,7 @@ You may not want to consider the empty string a valid input for numeric problems
 ### Invalid test strings
 
 If an input-output problem gaurantees only a particular kind of input tape, you can return `null` from `testString` to completely skip/disregard that test.
-For example, consider level 19, whose description is "Put a yellow in the middle of the (even-length) string". 
+For example, consider level 19, whose description is "Put a yellow in the middle of the (even-length) string".
 The problem assumes only even-length strings will be given as input.
 We simply return `null` on all odd-length input strings to skip those tests.
 We could write:
@@ -75,18 +75,22 @@ Another very common use case here is when your program treats the tape as a bina
 
 If you are working on problems that consider non-trivial input strings (containing greens, yellows, etc. or of a particular form), you can directly modify the variable `testVector` anywhere outside the body of `testString`.
 At the point of evaluation, `testVector` is an array containing all the strings that would normally be tested; you can overwrite it completely or modify/filter it in place.
-The function `genStringsOfLength(n)` is available which will generate possible strings consisting of `B` and `R` of length `n`.
+In case you need to make something from scratch, `mhelper` also contains the following functions:
+
+* `mhelper.genStringsOfLength(n)` returns all strings consisting of `B` and `R` only of exactly length `n`
+* `mhelper.genStringsUpToLength(n)` returns all strings consisting of `B` and `R` only of every length up to and including `n`
+
 For example, the last Manufactoria level is to add two numbers represented by strings of blue and red, separated by a green.
 So we might do the following:
 
 	// Construct our test set
-	testVector = [];
-	var a = genStringsOfLength(5);
-	for (var x of a) {
-		for (var y of a) {
-			testVector.push(x + "G" + y);
+	newTestVector = [];
+	for (var x of testVector) {
+		for (var y of testVector) {
+			newTestVector.push(x + "G" + y);
 		}
 	}
+	testVector = newTestVector;
 
 	testString = function(input) {
 		var parts = input.split("G");

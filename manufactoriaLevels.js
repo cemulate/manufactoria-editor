@@ -191,16 +191,13 @@ var level17 = `testString = function(input) {
 
 	// Accept strings that start with some number of blue, followed by the same number of red
 
-	var b = 0, r = 0;
-	var onBlue = true;
-	for (var c of input) {
-		if (c == "R") onBlue = false;
-		if ((onBlue && c == "R") || (!onBlue && c == "B")) return false;
-		if (c == "B") b += 1;
-		if (c == "R") r += 1;
-	}
+	var form = /^B*R*$/;
+	if (!form.test(input)) return false;
 
-	return (b == r);
+	if (input.length == 0) return true;
+	var length1 = input.indexOf("R");
+	var length2 = input.substr(length1).length;
+	return (length1 == length2);
 
 }`;
 
@@ -245,6 +242,116 @@ var level20 = `testString = function(input) {
 
 }`;
 
+var level21 = `testString = function(input) {
+
+	// Accept N blue, followed by N red, and then N more blue (for any N)
+
+	var form = /^B*R*B*$/;
+	if (!form.test(input)) return false;
+
+	if (input.length == 0) return true;
+	var length1 = input.indexOf("R");
+	var length2 = input.substr(length1).indexOf("B");
+	var length3 = input.substr(length2).length;
+	return (length1 == length2 && length2 == length3 && length1 == length3);
+
+}`;
+
+var level22 = `testString = function(input) {
+
+	// Accept if there are twice as many blues as reds
+
+	var b = 0, r = 0;
+	for (var c of input) {
+		if (c == "B") b += 1;
+		if (c == "R") r += 1;
+	}
+
+	return (b == 2*r);
+
+}`;
+
+var level23 = `testString = function(input) {
+
+	// Reverse the input string
+
+	return input.split("").reverse().join("");
+
+}`;
+
+var level24 = `testString = function(input) {
+
+	// Accept perfectly symmetrical strings
+
+	if (input.length == 0) return true;
+	if (input.length % 2 != 0) return null; // Odd-length strings not considered valid input
+
+	var half = input.length / 2;
+	var first = input.substr(0, half);
+	var second = input.substr(half, half).split("").reverse().join("");
+	return (first == second);
+
+}`;
+
+var level25 = `testString = function(input) {
+
+	// Swap blue for red and red for blue
+
+	var r = input.replace(/B/g, "X");
+	r = r.replace(/R/g, "B");
+	r = r.replace(/X/g, "R");
+	return r;
+
+}`;
+
+var level26 = `testString = function(input) {
+
+	// Output the input with red taken out
+
+	return input.replace(/R/g, "");
+
+}`;
+
+var level27 = `testString = function(input) {
+
+	// Return the input with all the blues moved to the front
+
+	var front = "";
+	for (var c of input) {
+		if (c == "B") front += "B";
+	}
+
+	var r = input.replace(/B/g, "");
+	return front + r;
+
+}`;
+
+var level28 = `testString = function(input) {
+
+	// Return the input, with the last symbol moved to the front
+
+	if (input.length == 0) return "";
+	return input.substr(0, input.length - 1) + input[input.length - 1];
+
+}`;
+
+var level29 = `// Construct our test vector
+var newTestVector = [];
+for (var x of testVector) {
+	for (var y of testVector) {
+		newTestVector.push(x + "G" + y);
+	}
+}
+testVector = newTestVector;
+
+testString = function(input) {
+
+	// Accept two identical strings, separated by a green
+
+	var parts = input.split("G");
+	return (parts[0] == parts[1]);
+
+}`;
 
 manufactoriaLevels.push({number: 1, name: "Robotoast!", testFunction: level1});
 manufactoriaLevels.push({number: 2, name: "Robocoffee!", testFunction: level2});
@@ -266,3 +373,12 @@ manufactoriaLevels.push({number: 17, name: "Androids!", testFunction: level17});
 manufactoriaLevels.push({number: 18, name: "Robo-children!", testFunction: level18});
 manufactoriaLevels.push({number: 19, name: "Police!", testFunction: level19});
 manufactoriaLevels.push({number: 20, name: "Judiciary!", testFunction: level20});
+manufactoriaLevels.push({number: 21, name: "Teachers!", testFunction: level21});
+manufactoriaLevels.push({number: 22, name: "Politicians!", testFunction: level22});
+manufactoriaLevels.push({number: 23, name: "Academics!", testFunction: level23});
+manufactoriaLevels.push({number: 24, name: "Engineers!", testFunction: level24});
+manufactoriaLevels.push({number: 25, name: "Roborockets!", testFunction: level25});
+manufactoriaLevels.push({number: 26, name: "Roboplanes!", testFunction: level26});
+manufactoriaLevels.push({number: 27, name: "Rocket Planes!", testFunction: level27});
+manufactoriaLevels.push({number: 28, name: "Robomecha!", testFunction: level28});
+manufactoriaLevels.push({number: 29, name: "Seraphim", testFunction: level29});
