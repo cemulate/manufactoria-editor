@@ -2828,7 +2828,7 @@ System.register('loader', ['core', 'codeCell', 'tmath', 'program'], function (_e
 System.register("manufactoriaLevels", [], function (_export) {
 	"use strict";
 
-	var manufactoriaLevels, level1, level2, level3, level4, level4, level5, level6, level7, level8, level9, level10, level11, level12, level13, level14, level15, level16, level17, level18, level19, level20, level21, level22, level23, level24, level25, level26, level27, level28, level29;
+	var manufactoriaLevels, level1, level2, level3, level4, level5, level6, level7, level8, level9, level10, level11, level12, level13, level14, level15, level16, level17, level18, level19, level20, level21, level22, level23, level24, level25, level26, level27, level28, level29;
 	return {
 		setters: [],
 		execute: function () {
@@ -2836,38 +2836,35 @@ System.register("manufactoriaLevels", [], function (_export) {
 
 			_export("default", manufactoriaLevels);
 
-			level1 = "testString = function(input) {\n\n\t// Accept everything (Recommended size limit: 5x5)\n\n\treturn true;\n\n}";
-			level2 = "testString = function(input) {\n\n\t// Accept strings that start with blue\n\n\treturn input.startsWith(\"B\");\n\n}";
-			level3 = "testString = function(input) {\n\n\t// Accept if string contains three or more blues\n\n\tvar b = 0;\n\tfor (var c of input) {\n\t\tif (c == \"B\") b += 1;\n\t}\n\n\treturn (b >= 3);\n\n}";
-			level4 = "testString = function(input) {\n\n\t// Accept if string contains no red\n\n\treturn (input.indexOf(\"R\") == -1);\n\n}";
-			level4 = "testString = function(input) {\n\n\t// Accept if string contains no red\n\n\treturn (input.indexOf(\"R\") == -1);\n\n}";
-			level5 = "testString = function(input) {\n\n\t// Accept if string has alternating colors\n\n\tif (input.length == 0) return true;\n\n\tvar current = input[0];\n\tfor (var c of input.slice(1)) {\n\t\tif (c == current) return false;\n\t\tcurrent = c;\n\t}\n\n\treturn true;\n\n}";
-			level6 = "testString = function(input) {\n\n\t// Accept if string ends with two blues\n\n\treturn input.endsWith(\"BB\");\n\n}";
-			level7 = "testString = function(input) {\n\n\t// Accept if string begins and ends with same color\n\n\tif (input.length == 0) return true;\n\n\treturn (input[0] == input[input.length - 1]);\n\n}";
-			level8 = "testString = function(input) {\n\n\t// Return input, but with the first symbol at the end\n\n\tif (input.length == 0) return \"\";\n\n\treturn input.slice(1) + input[0];\n\n}";
-			level9 = "testString = function(input) {\n\n\t// Replace blue with green, and red with yellow\n\n\tvar r = input.replace(/B/g, \"G\");\n\tr = r.replace(/R/g, \"Y\");\n\treturn r;\n\n}";
-			level10 = "testString = function(input) {\n\n\t// Put a green at the beginning and a yellow at the end\n\n\treturn \"G\" + input + \"Y\";\n\n}";
-			level11 = "testString = function(input) {\n\n\t// With R=0, B=1, accept odd binary strings\n\n\treturn input.endsWith(\"B\");\n\n}";
-			level12 = "numericEquivalence = true;\n\ntestString = function(input) {\n\n\t// With R=0, B=1, return input multiplied by 8\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum = num * 8;\n\treturn mhelper.numberToTape(num);\n\n}";
-			level13 = "numericEquivalence = true;\n\ntestString = function(input) {\n\n\t// With R=0, B=1, return input + 1\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum += 1;\n\treturn mhelper.numberToTape(num);\n\n}";
-			level14 = "numericEquivalence = true;\n\ntestString = function(input) {\n\n\t// With R=0, B=1, subtract 1 from input\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum -= 1;\n\treturn mhelper.numberToTape(num);\n\n}";
-			level15 = "testString = function(input) {\n\n\t// With R=0, B=1, accept values greater than 15\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\treturn (num > 15);\n\n}";
-			level16 = "testString = function(input) {\n\n\t// With R=0, B=1, accept powers of 4\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\tvar check = 1;\n\twhile (check < num) {\n\t\tcheck *= 4;\n\t\tif (check == num) return true;\n\t}\n\n\treturn false;\n\n}";
-			level17 = "testString = function(input) {\n\n\t// Accept strings that start with some number of blue, followed by the same number of red\n\n\tvar form = /^B*R*$/;\n\tif (!form.test(input)) return false;\n\n\tif (input.length == 0) return true;\n\tvar length1 = input.indexOf(\"R\");\n\tvar length2 = input.substr(length1).length;\n\treturn (length1 == length2);\n\n}";
-			level18 = "testString = function(input) {\n\n\t// Accept strings that contain an equal amount of blue and red\n\n\tvar b = 0, r = 0;\n\tfor (var c of input) {\n\t\tif (c == \"B\") b += 1;\n\t\tif (c == \"R\") r += 1;\n\t}\n\n\treturn (b == r);\n\n}";
-
-			// This one needs some more infrastructure to support
-			level19 = "testString = function(input) {\n\n\t// Put a yellow in the middle of the even-length string\n\n\tif (input.length == 0) return \"Y\";\n\tif (input.length % 2 != 0) return null; // Odd-length strings are not valid input, skip them.\n\n\tvar half = input.length/2;\n\n\treturn input.substr(0, half) + \"Y\" + input.substr(half, half);\n\n}";
-			level20 = "testString = function(input) {\n\n\t// Accept even length strings that repeat half-way through\n\n\tif (input.length == 0) return true;\n\tif (input.length % 2 != 0) return false;\n\n\tvar half = input.length/2;\n\n\treturn (input.substr(0, half) == input.substr(half, half));\n\n}";
-			level21 = "testString = function(input) {\n\n\t// Accept N blue, followed by N red, and then N more blue (for any N)\n\n\tvar form = /^B*R*B*$/;\n\tif (!form.test(input)) return false;\n\n\tif (input.length == 0) return true;\n\tvar length1 = input.indexOf(\"R\");\n\tvar length2 = input.substr(length1).indexOf(\"B\");\n\tvar length3 = input.substr(length2).length;\n\treturn (length1 == length2 && length2 == length3 && length1 == length3);\n\n}";
-			level22 = "testString = function(input) {\n\n\t// Accept if there are twice as many blues as reds\n\n\tvar b = 0, r = 0;\n\tfor (var c of input) {\n\t\tif (c == \"B\") b += 1;\n\t\tif (c == \"R\") r += 1;\n\t}\n\n\treturn (b == 2*r);\n\n}";
-			level23 = "testString = function(input) {\n\n\t// Reverse the input string\n\n\treturn input.split(\"\").reverse().join(\"\");\n\n}";
-			level24 = "testString = function(input) {\n\n\t// Accept perfectly symmetrical strings\n\n\tif (input.length == 0) return true;\n\tif (input.length % 2 != 0) return null; // Odd-length strings not considered valid input\n\n\tvar half = input.length / 2;\n\tvar first = input.substr(0, half);\n\tvar second = input.substr(half, half).split(\"\").reverse().join(\"\");\n\treturn (first == second);\n\n}";
-			level25 = "testString = function(input) {\n\n\t// Swap blue for red and red for blue\n\n\tvar r = input.replace(/B/g, \"X\");\n\tr = r.replace(/R/g, \"B\");\n\tr = r.replace(/X/g, \"R\");\n\treturn r;\n\n}";
-			level26 = "testString = function(input) {\n\n\t// Output the input with red taken out\n\n\treturn input.replace(/R/g, \"\");\n\n}";
-			level27 = "testString = function(input) {\n\n\t// Return the input with all the blues moved to the front\n\n\tvar front = \"\";\n\tfor (var c of input) {\n\t\tif (c == \"B\") front += \"B\";\n\t}\n\n\tvar r = input.replace(/B/g, \"\");\n\treturn front + r;\n\n}";
-			level28 = "testString = function(input) {\n\n\t// Return the input, with the last symbol moved to the front\n\n\tif (input.length == 0) return \"\";\n\treturn input.substr(0, input.length - 1) + input[input.length - 1];\n\n}";
-			level29 = "// Construct our test vector\nvar newTestVector = [];\nfor (var x of testVector) {\n\tfor (var y of testVector) {\n\t\tnewTestVector.push(x + \"G\" + y);\n\t}\n}\ntestVector = newTestVector;\n\ntestString = function(input) {\n\n\t// Accept two identical strings, separated by a green\n\n\tvar parts = input.split(\"G\");\n\treturn (parts[0] == parts[1]);\n\n}";
+			level1 = "testString = function(input) {\n\n\t// Level 1: Accept everything (Recommended size limit: 5x5)\n\n\treturn true;\n\n}";
+			level2 = "testString = function(input) {\n\n\t// Level 2: Accept strings that start with blue\n\n\treturn input.startsWith(\"B\");\n\n}";
+			level3 = "testString = function(input) {\n\n\t// Level 3: Accept if string contains three or more blues\n\n\tvar b = 0;\n\tfor (var c of input) {\n\t\tif (c == \"B\") b += 1;\n\t}\n\n\treturn (b >= 3);\n\n}";
+			level4 = "testString = function(input) {\n\n\t// Level 4: Accept if string contains no red\n\n\treturn (input.indexOf(\"R\") == -1);\n\n}";
+			level5 = "testString = function(input) {\n\n\t// Level 5: Accept if string has alternating colors\n\n\tif (input.length == 0) return true;\n\n\tvar current = input[0];\n\tfor (var c of input.slice(1)) {\n\t\tif (c == current) return false;\n\t\tcurrent = c;\n\t}\n\n\treturn true;\n\n}";
+			level6 = "testString = function(input) {\n\n\t// Level 6: Accept if string ends with two blues\n\n\treturn input.endsWith(\"BB\");\n\n}";
+			level7 = "testString = function(input) {\n\n\t// Level 7: Accept if string begins and ends with same color\n\n\tif (input.length == 0) return true;\n\n\treturn (input[0] == input[input.length - 1]);\n\n}";
+			level8 = "testString = function(input) {\n\n\t// Level 8: Return input, but with the first symbol at the end\n\n\tif (input.length == 0) return \"\";\n\n\treturn input.slice(1) + input[0];\n\n}";
+			level9 = "testString = function(input) {\n\n\t// Level 9: Replace blue with green, and red with yellow\n\n\tvar r = input.replace(/B/g, \"G\");\n\tr = r.replace(/R/g, \"Y\");\n\treturn r;\n\n}";
+			level10 = "testString = function(input) {\n\n\t// Level 10: Put a green at the beginning and a yellow at the end\n\n\treturn \"G\" + input + \"Y\";\n\n}";
+			level11 = "testString = function(input) {\n\n\t// Level 11: With R=0, B=1, accept odd binary strings\n\n\treturn input.endsWith(\"B\");\n\n}";
+			level12 = "numericEquivalence = true;\n\ntestString = function(input) {\n\n\t// Level 12: With R=0, B=1, return input multiplied by 8\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum = num * 8;\n\treturn mhelper.numberToTape(num);\n\n}";
+			level13 = "numericEquivalence = true;\n\ntestString = function(input) {\n\n\t// Level 13: With R=0, B=1, return input + 1\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum += 1;\n\treturn mhelper.numberToTape(num);\n\n}";
+			level14 = "numericEquivalence = true;\n\ntestString = function(input) {\n\n\t// Level 14: With R=0, B=1, subtract 1 from input\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\tnum -= 1;\n\treturn mhelper.numberToTape(num);\n\n}";
+			level15 = "testString = function(input) {\n\n\t// Level 15: With R=0, B=1, accept values greater than 15\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\treturn (num > 15);\n\n}";
+			level16 = "testString = function(input) {\n\n\t// Level 16: With R=0, B=1, accept powers of 4\n\n\tif (input.length == 0) return null; // Empty string not considered valid on numeric problems\n\n\tvar num = mhelper.tapeToNumber(input);\n\tvar check = 1;\n\twhile (check < num) {\n\t\tcheck *= 4;\n\t\tif (check == num) return true;\n\t}\n\n\treturn false;\n\n}";
+			level17 = "testString = function(input) {\n\n\t// Level 17: Accept strings that start with some number of blue, followed by the same number of red\n\n\tvar form = /^B*R*$/;\n\tif (!form.test(input)) return false;\n\n\tif (input.length == 0) return true;\n\tvar length1 = input.indexOf(\"R\");\n\tvar length2 = input.substr(length1).length;\n\treturn (length1 == length2);\n\n}";
+			level18 = "testString = function(input) {\n\n\t// Level 18: Accept strings that contain an equal amount of blue and red\n\n\tvar b = 0, r = 0;\n\tfor (var c of input) {\n\t\tif (c == \"B\") b += 1;\n\t\tif (c == \"R\") r += 1;\n\t}\n\n\treturn (b == r);\n\n}";
+			level19 = "testString = function(input) {\n\n\t// Level 19: Put a yellow in the middle of the even-length string\n\n\tif (input.length == 0) return \"Y\";\n\tif (input.length % 2 != 0) return null; // Odd-length strings are not valid input, skip them.\n\n\tvar half = input.length/2;\n\n\treturn input.substr(0, half) + \"Y\" + input.substr(half, half);\n\n}";
+			level20 = "testString = function(input) {\n\n\t// Level 20: Accept even length strings that repeat half-way through\n\n\tif (input.length == 0) return true;\n\tif (input.length % 2 != 0) return false;\n\n\tvar half = input.length/2;\n\n\treturn (input.substr(0, half) == input.substr(half, half));\n\n}";
+			level21 = "testString = function(input) {\n\n\t// Level 21: Accept N blue, followed by N red, and then N more blue (for any N)\n\n\tvar form = /^B*R*B*$/;\n\tif (!form.test(input)) return false;\n\n\tif (input.length == 0) return true;\n\tvar length1 = input.indexOf(\"R\");\n\tvar length2 = input.substr(length1).indexOf(\"B\");\n\tvar length3 = input.substr(length2).length;\n\treturn (length1 == length2 && length2 == length3 && length1 == length3);\n\n}";
+			level22 = "testString = function(input) {\n\n\t// Level 22: Accept if there are twice as many blues as reds\n\n\tvar b = 0, r = 0;\n\tfor (var c of input) {\n\t\tif (c == \"B\") b += 1;\n\t\tif (c == \"R\") r += 1;\n\t}\n\n\treturn (b == 2*r);\n\n}";
+			level23 = "testString = function(input) {\n\n\t// Level 23: Reverse the input string\n\n\treturn input.split(\"\").reverse().join(\"\");\n\n}";
+			level24 = "testString = function(input) {\n\n\t// Level 24: Accept perfectly symmetrical strings\n\n\tif (input.length == 0) return true;\n\tif (input.length % 2 != 0) return null; // Odd-length strings not considered valid input\n\n\tvar half = input.length / 2;\n\tvar first = input.substr(0, half);\n\tvar second = input.substr(half, half).split(\"\").reverse().join(\"\");\n\treturn (first == second);\n\n}";
+			level25 = "testString = function(input) {\n\n\t// Level 25: Swap blue for red and red for blue\n\n\tvar r = input.replace(/B/g, \"X\");\n\tr = r.replace(/R/g, \"B\");\n\tr = r.replace(/X/g, \"R\");\n\treturn r;\n\n}";
+			level26 = "testString = function(input) {\n\n\t// Level 26: Output the input with red taken out\n\n\treturn input.replace(/R/g, \"\");\n\n}";
+			level27 = "testString = function(input) {\n\n\t// Level 27: Return the input with all the blues moved to the front\n\n\tvar front = \"\";\n\tfor (var c of input) {\n\t\tif (c == \"B\") front += \"B\";\n\t}\n\n\tvar r = input.replace(/B/g, \"\");\n\treturn front + r;\n\n}";
+			level28 = "testString = function(input) {\n\n\t// Level 28: Return the input, with the last symbol moved to the front\n\n\tif (input.length == 0) return \"\";\n\treturn input.substr(0, input.length - 1) + input[input.length - 1];\n\n}";
+			level29 = "// Construct our test vector\nvar newTestVector = [];\nfor (var x of testVector) {\n\tfor (var y of testVector) {\n\t\tnewTestVector.push(x + \"G\" + y);\n\t}\n}\ntestVector = newTestVector;\n\ntestString = function(input) {\n\n\t// Level 29: Accept two identical strings, separated by a green\n\n\tvar parts = input.split(\"G\");\n\treturn (parts[0] == parts[1]);\n\n}";
 
 			manufactoriaLevels.push({ number: 1, name: "Robotoast!", testFunction: level1 });
 			manufactoriaLevels.push({ number: 2, name: "Robocoffee!", testFunction: level2 });
@@ -2878,7 +2875,7 @@ System.register("manufactoriaLevels", [], function (_export) {
 			manufactoriaLevels.push({ number: 7, name: "Robobears!", testFunction: level7 });
 			manufactoriaLevels.push({ number: 8, name: "RC Cars!", testFunction: level8 });
 			manufactoriaLevels.push({ number: 9, name: "Robocars!", testFunction: level9 });
-			manufactoriaLevels.push({ number: 10, name: "Robostils!", testFunction: level10 });
+			manufactoriaLevels.push({ number: 10, name: "Robostilts!", testFunction: level10 });
 			manufactoriaLevels.push({ number: 11, name: "Milidogs!", testFunction: level11 });
 			manufactoriaLevels.push({ number: 12, name: "Soldiers", testFunction: level12 });
 			manufactoriaLevels.push({ number: 13, name: "Officers!", testFunction: level13 });
