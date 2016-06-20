@@ -288,7 +288,6 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         });
                         if (level == null) return;
                         this.specEditor.setValue(level.testFunction, -1);
-                        $("#test-select").val("blank");
                     }
                 }, {
                     key: 'testProgram',
