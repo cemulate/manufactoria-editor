@@ -4,7 +4,7 @@ export default manufactoriaLevels;
 
 var level1 = `testString = function(input) {
 
-	// Accept everything (Recommended size limit: 5x5)
+	// Level 1: Accept everything (Recommended size limit: 5x5)
 
 	return true;
 
@@ -12,7 +12,7 @@ var level1 = `testString = function(input) {
 
 var level2 = `testString = function(input) {
 
-	// Accept strings that start with blue
+	// Level 2: Accept strings that start with blue
 
 	return input.startsWith("B");
 
@@ -20,7 +20,7 @@ var level2 = `testString = function(input) {
 
 var level3 = `testString = function(input) {
 
-	// Accept if string contains three or more blues
+	// Level 3: Accept if string contains three or more blues
 
 	var b = 0;
 	for (var c of input) {
@@ -33,15 +33,7 @@ var level3 = `testString = function(input) {
 
 var level4 = `testString = function(input) {
 
-	// Accept if string contains no red
-
-	return (input.indexOf("R") == -1);
-
-}`;
-
-var level4 = `testString = function(input) {
-
-	// Accept if string contains no red
+	// Level 4: Accept if string contains no red
 
 	return (input.indexOf("R") == -1);
 
@@ -49,7 +41,7 @@ var level4 = `testString = function(input) {
 
 var level5 = `testString = function(input) {
 
-	// Accept if string has alternating colors
+	// Level 5: Accept if string has alternating colors
 
 	if (input.length == 0) return true;
 
@@ -65,7 +57,7 @@ var level5 = `testString = function(input) {
 
 var level6 = `testString = function(input) {
 
-	// Accept if string ends with two blues
+	// Level 6: Accept if string ends with two blues
 
 	return input.endsWith("BB");
 
@@ -73,7 +65,7 @@ var level6 = `testString = function(input) {
 
 var level7 = `testString = function(input) {
 
-	// Accept if string begins and ends with same color
+	// Level 7: Accept if string begins and ends with same color
 
 	if (input.length == 0) return true;
 
@@ -83,7 +75,7 @@ var level7 = `testString = function(input) {
 
 var level8 = `testString = function(input) {
 
-	// Return input, but with the first symbol at the end
+	// Level 8: Return input, but with the first symbol at the end
 
 	if (input.length == 0) return "";
 
@@ -93,7 +85,7 @@ var level8 = `testString = function(input) {
 
 var level9 = `testString = function(input) {
 
-	// Replace blue with green, and red with yellow
+	// Level 9: Replace blue with green, and red with yellow
 
 	var r = input.replace(/B/g, "G");
 	r = r.replace(/R/g, "Y");
@@ -103,7 +95,7 @@ var level9 = `testString = function(input) {
 
 var level10 = `testString = function(input) {
 
-	// Put a green at the beginning and a yellow at the end
+	// Level 10: Put a green at the beginning and a yellow at the end
 
 	return "G" + input + "Y";
 
@@ -111,7 +103,7 @@ var level10 = `testString = function(input) {
 
 var level11 = `testString = function(input) {
 
-	// With R=0, B=1, accept odd binary strings
+	// Level 11: With R=0, B=1, accept odd binary strings
 
 	return input.endsWith("B");
 
@@ -121,7 +113,7 @@ var level12 = `numericEquivalence = true;
 
 testString = function(input) {
 
-	// With R=0, B=1, return input multiplied by 8
+	// Level 12: With R=0, B=1, return input multiplied by 8
 
 	if (input.length == 0) return null; // Empty string not considered valid on numeric problems
 
@@ -135,7 +127,7 @@ var level13 = `numericEquivalence = true;
 
 testString = function(input) {
 
-	// With R=0, B=1, return input + 1
+	// Level 13: With R=0, B=1, return input + 1
 
 	if (input.length == 0) return null; // Empty string not considered valid on numeric problems
 
@@ -149,7 +141,7 @@ var level14 = `numericEquivalence = true;
 
 testString = function(input) {
 
-	// With R=0, B=1, subtract 1 from input
+	// Level 14: With R=0, B=1, subtract 1 from input
 
 	if (input.length == 0) return null; // Empty string not considered valid on numeric problems
 
@@ -161,7 +153,7 @@ testString = function(input) {
 
 var level15 = `testString = function(input) {
 
-	// With R=0, B=1, accept values greater than 15
+	// Level 15: With R=0, B=1, accept values greater than 15
 
 	if (input.length == 0) return null; // Empty string not considered valid on numeric problems
 
@@ -172,7 +164,7 @@ var level15 = `testString = function(input) {
 
 var level16 = `testString = function(input) {
 
-	// With R=0, B=1, accept powers of 4
+	// Level 16: With R=0, B=1, accept powers of 4
 
 	if (input.length == 0) return null; // Empty string not considered valid on numeric problems
 
@@ -189,7 +181,7 @@ var level16 = `testString = function(input) {
 
 var level17 = `testString = function(input) {
 
-	// Accept strings that start with some number of blue, followed by the same number of red
+	// Level 17: Accept strings that start with some number of blue, followed by the same number of red
 
 	var form = /^B*R*$/;
 	if (!form.test(input)) return false;
@@ -203,7 +195,7 @@ var level17 = `testString = function(input) {
 
 var level18 = `testString = function(input) {
 
-	// Accept strings that contain an equal amount of blue and red
+	// Level 18: Accept strings that contain an equal amount of blue and red
 
 	var b = 0, r = 0;
 	for (var c of input) {
@@ -215,10 +207,9 @@ var level18 = `testString = function(input) {
 
 }`;
 
-// This one needs some more infrastructure to support
 var level19 = `testString = function(input) {
 
-	// Put a yellow in the middle of the even-length string
+	// Level 19: Put a yellow in the middle of the even-length string
 
 	if (input.length == 0) return "Y";
 	if (input.length % 2 != 0) return null; // Odd-length strings are not valid input, skip them.
@@ -231,7 +222,7 @@ var level19 = `testString = function(input) {
 
 var level20 = `testString = function(input) {
 
-	// Accept even length strings that repeat half-way through
+	// Level 20: Accept even length strings that repeat half-way through
 
 	if (input.length == 0) return true;
 	if (input.length % 2 != 0) return false;
@@ -244,7 +235,7 @@ var level20 = `testString = function(input) {
 
 var level21 = `testString = function(input) {
 
-	// Accept N blue, followed by N red, and then N more blue (for any N)
+	// Level 21: Accept N blue, followed by N red, and then N more blue (for any N)
 
 	var form = /^B*R*B*$/;
 	if (!form.test(input)) return false;
@@ -259,7 +250,7 @@ var level21 = `testString = function(input) {
 
 var level22 = `testString = function(input) {
 
-	// Accept if there are twice as many blues as reds
+	// Level 22: Accept if there are twice as many blues as reds
 
 	var b = 0, r = 0;
 	for (var c of input) {
@@ -273,7 +264,7 @@ var level22 = `testString = function(input) {
 
 var level23 = `testString = function(input) {
 
-	// Reverse the input string
+	// Level 23: Reverse the input string
 
 	return input.split("").reverse().join("");
 
@@ -281,7 +272,7 @@ var level23 = `testString = function(input) {
 
 var level24 = `testString = function(input) {
 
-	// Accept perfectly symmetrical strings
+	// Level 24: Accept perfectly symmetrical strings
 
 	if (input.length == 0) return true;
 	if (input.length % 2 != 0) return null; // Odd-length strings not considered valid input
@@ -295,7 +286,7 @@ var level24 = `testString = function(input) {
 
 var level25 = `testString = function(input) {
 
-	// Swap blue for red and red for blue
+	// Level 25: Swap blue for red and red for blue
 
 	var r = input.replace(/B/g, "X");
 	r = r.replace(/R/g, "B");
@@ -306,7 +297,7 @@ var level25 = `testString = function(input) {
 
 var level26 = `testString = function(input) {
 
-	// Output the input with red taken out
+	// Level 26: Output the input with red taken out
 
 	return input.replace(/R/g, "");
 
@@ -314,7 +305,7 @@ var level26 = `testString = function(input) {
 
 var level27 = `testString = function(input) {
 
-	// Return the input with all the blues moved to the front
+	// Level 27: Return the input with all the blues moved to the front
 
 	var front = "";
 	for (var c of input) {
@@ -328,7 +319,7 @@ var level27 = `testString = function(input) {
 
 var level28 = `testString = function(input) {
 
-	// Return the input, with the last symbol moved to the front
+	// Level 28: Return the input, with the last symbol moved to the front
 
 	if (input.length == 0) return "";
 	return input.substr(0, input.length - 1) + input[input.length - 1];
@@ -346,7 +337,7 @@ testVector = newTestVector;
 
 testString = function(input) {
 
-	// Accept two identical strings, separated by a green
+	// Level 29: Accept two identical strings, separated by a green
 
 	var parts = input.split("G");
 	return (parts[0] == parts[1]);
@@ -362,7 +353,7 @@ manufactoriaLevels.push({number: 6, name: "Robocats!", testFunction: level6});
 manufactoriaLevels.push({number: 7, name: "Robobears!", testFunction: level7});
 manufactoriaLevels.push({number: 8, name: "RC Cars!", testFunction: level8});
 manufactoriaLevels.push({number: 9, name: "Robocars!", testFunction: level9});
-manufactoriaLevels.push({number: 10, name: "Robostils!", testFunction: level10});
+manufactoriaLevels.push({number: 10, name: "Robostilts!", testFunction: level10});
 manufactoriaLevels.push({number: 11, name: "Milidogs!", testFunction: level11});
 manufactoriaLevels.push({number: 12, name: "Soldiers", testFunction: level12});
 manufactoriaLevels.push({number: 13, name: "Officers!", testFunction: level13});
