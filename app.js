@@ -208,7 +208,6 @@ class App {
         var level = manufactoriaLevels.find(x => x.number == n);
         if (level == null) return;
         this.specEditor.setValue(level.testFunction, -1);
-        $("#test-select").val("blank");
     }
 
     testProgram() {
