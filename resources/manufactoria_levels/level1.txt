@@ -1,7 +1,0 @@
-testString = function(input) {
-
-	// Level 1: Accept all
-
-	return true;
-	
-}
