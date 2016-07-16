@@ -15,8 +15,8 @@ var $ = require('gulp-load-plugins')({camelize: true});
 
 var dir = {
     index: ['./index.html', 'main.js'],
-    sourceDir: './',
-    source: ['./*.js', '!./gulpfile.js', '!main.js'],
+    sourceDir: './src',
+    source: ['./src/*.js'],
     lib: ['node_modules/systemjs/dist/system.*',
           'node_modules/gulp-babel/node_modules/babel-core/browser-polyfill.*',
           'bower_components/**/*'
