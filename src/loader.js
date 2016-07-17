@@ -269,6 +269,23 @@ function jsonToProgram(json) {
 
 }
 
+function programToEsolang(p) {
+    var out = "";
+
+    p.cells.forEach(function(column, x) {
+        var line = "";
+        column.forEach(function(cell, y) {
+            if (cell.type == 'Empty') line += " ";
+            if (cell.type == 'Start') line += "@";
+            if (cell.type == 'End') line += ";";
+        });
+    });
+}
+
+function esolangToProgram(elang) {
+
+}
+
 function tapeToJson(t) {
     return t.symbols.reduce(
         function(prev, cur) {

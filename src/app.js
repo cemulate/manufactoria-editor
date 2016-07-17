@@ -120,10 +120,10 @@ class App {
             this.clearProgramGeneratedAndLoadStrings();
         });
 
-        var jsonForm = $('#json-form');
-        jsonForm.find('button:first').click(() => this.generateJson());
-        jsonForm.find('button:last').click(() => this.loadFromJson());
-        jsonForm.find('input').val('');
+        var otherFormatForm = $('#other-format-form');
+        otherFormatForm.find('button:first').click(() => this.generateOther());
+        otherFormatForm.find('button:last').click(() => $("#other-format-file-input").click());
+        $("#other-format-file-input").on('change', () => this.loadFromOther());
         var manufactoriaForm = $('#manufactoria-form');
         manufactoriaForm.find('button:first').click(() => this.generateManufactoria());
         manufactoriaForm.find('button:last').click(() => this.loadFromManufactoria());
@@ -158,17 +158,30 @@ class App {
         $('#manufactoria-form').find('input').val('');
     }
 
-    loadFromJson() {
-        const jsonForm = $('#json-form'),
-              programString = jsonForm.find('input').val().trim();
-        const prog = loader.jsonToProgram(JSON.parse(programString));
-        if (prog) {
-            this.levelEditor.setProgram(prog);
-            this.clearProgramGeneratedAndLoadStrings();
-        } else {
-            console.log('Unable to load program string');
-            return null;
+    loadFromOther() {
+        var file = $("#other-format-file-input").get(0).files[0];
+        var reader = new FileReader();
+        reader.onload = () => {
+            var text = reader.result;
+            if ($("#other-format-select").val() == "json") {
+                var prog = null;
+                var error = false;
+                try {
+                    prog = loader.jsonToProgram(JSON.parse(text));
+                } catch (e) {
+                    error = true;
+                }
+                if (prog) {
+                    this.levelEditor.setProgram(prog);
+                    this.clearProgramGeneratedAndLoadStrings();
+                } else {
+                    error = true;
+                }
+                if (error) alert("Error reading selected program file");
+            }
         }
+
+        reader.readAsText(file);
     }
 
     loadFromManufactoria() {
@@ -184,10 +197,19 @@ class App {
         }
     }
 
-    generateJson() {
+    generateOther() {
         if (this.levelEditor.level.program != null) {
             var json = loader.programToJson(this.levelEditor.level.program);
             $('#json-form').find('input').val(JSON.stringify(json));
+        }
+
+        if ($("#other-format-select").val() == "json") {
+            var json = loader.programToJson(this.levelEditor.level.program);
+            var text = JSON.stringify(json);
+            var blob = new Blob([text]);
+			var url = window.URL.createObjectURL(blob);
+            var link = $("<a>").attr("target", "_blank").attr("href", url);
+            link.get(0).click();
         }
     }
 
