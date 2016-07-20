@@ -111,4 +111,8 @@ If your manufactoria program returns the string `RRRB`, and your test function s
 
 ## Exporting
 
-Explanations of export formats to be written.
+There two additional options to save your program in another format:
+* The *JSON* option produces a JSON representation of the program
+* The *Manufactoria Esolang (Extended)* produces an output file in the (modified) syntax of the [Manufactoria Esolang](https://esolangs.org/wiki/Manufactoria).
+The exact format is defined by the [interpreter I wrote for it](https://github.com/cemulate/haskell-manufactoria-interpreter).
+The specific changes that differ from the original esolang are discussed [here](https://github.com/cemulate/haskell-manufactoria-interpreter/blob/master/README.md#changes-to-specifications)
