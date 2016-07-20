@@ -95,16 +95,21 @@
       <form>
         <div class="row form hide-fullscreen">
           <div class="medium-12 large-12 columns">
-            <div class="row collapse " id="json-form">
-              <label>Generate or load from a JSON string encoding your program</label>
+            <div class="row collapse " id="other-format-form">
+              <label>Generate and load programs from text files in other formats</label>
               <div class="small-2 columns">
-                <button type="button" class="button prefix">Generate</button>
+                <button type="button" class="button prefix">Generate File</button>
               </div>
               <div class="small-8 columns">
-                <input style="font-family: monospace; font-size: 14px" type="text"></input>
+                  <select id="other-format-select" class="code-style">
+                      <option value="json">JSON String</option>
+                      <option value="esolang">Manufactoria Esolang</option>
+                      <option value="esolang-extension">Extended Manufactoria Esolang</option>
+                  </select>
               </div>
               <div class="small-2 columns">
-                <button type="button" class="button success postfix">Load</button>
+                <button type="button" class="button success postfix">Load from File</button>
+                <input id="other-format-file-input" type="file" style="display:none"></input>
               </div>
             </div>
           </div>

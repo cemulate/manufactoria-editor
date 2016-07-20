@@ -167,14 +167,16 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                             _this.clearProgramGeneratedAndLoadStrings();
                         });
 
-                        var jsonForm = $('#json-form');
-                        jsonForm.find('button:first').click(function () {
-                            return _this.generateJson();
+                        var otherFormatForm = $('#other-format-form');
+                        otherFormatForm.find('button:first').click(function () {
+                            return _this.generateOther();
                         });
-                        jsonForm.find('button:last').click(function () {
-                            return _this.loadFromJson();
+                        otherFormatForm.find('button:last').click(function () {
+                            return $("#other-format-file-input").click();
                         });
-                        jsonForm.find('input').val('');
+                        $("#other-format-file-input").on('change', function () {
+                            return _this.loadFromOther();
+                        });
                         var manufactoriaForm = $('#manufactoria-form');
                         manufactoriaForm.find('button:first').click(function () {
                             return _this.generateManufactoria();
@@ -209,18 +211,29 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         $('#manufactoria-form').find('input').val('');
                     }
                 }, {
-                    key: 'loadFromJson',
-                    value: function loadFromJson() {
-                        var jsonForm = $('#json-form'),
-                            programString = jsonForm.find('input').val().trim();
-                        var prog = loader.jsonToProgram(JSON.parse(programString));
-                        if (prog) {
-                            this.levelEditor.setProgram(prog);
-                            this.clearProgramGeneratedAndLoadStrings();
-                        } else {
-                            console.log('Unable to load program string');
-                            return null;
-                        }
+                    key: 'loadFromOther',
+                    value: function loadFromOther() {
+                        var _this2 = this;
+
+                        var file = $("#other-format-file-input").get(0).files[0];
+                        var reader = new FileReader();
+                        reader.onload = function () {
+                            var text = reader.result;
+                            if ($("#other-format-select").val() == "json") {
+                                var prog = loader.jsonToProgram(JSON.parse(text));
+                                if (prog) {
+                                    _this2.levelEditor.setProgram(prog);
+                                    _this2.clearProgramGeneratedAndLoadStrings();
+                                } else {
+                                    alert("Error reading selected program file");
+                                }
+                            }
+                            if ($("#other-format-select").val().startsWith("esolang")) {
+                                alert("Format not yet supported for loading");
+                            }
+                        };
+
+                        reader.readAsText(file);
                     }
                 }, {
                     key: 'loadFromManufactoria',
@@ -237,12 +250,21 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                         }
                     }
                 }, {
-                    key: 'generateJson',
-                    value: function generateJson() {
-                        if (this.levelEditor.level.program != null) {
+                    key: 'generateOther',
+                    value: function generateOther() {
+                        var text = null;
+                        if ($("#other-format-select").val() == "json") {
                             var json = loader.programToJson(this.levelEditor.level.program);
-                            $('#json-form').find('input').val(JSON.stringify(json));
+                            var text = JSON.stringify(json);
                         }
+                        if ($("#other-format-select").val().startsWith("esolang")) {
+                            var extend = $("#other-format-select").val() == "esolang-extension";
+                            var text = loader.programToEsolang(this.levelEditor.level.program, extend);
+                        }
+                        var blob = new Blob([text]);
+                        var url = window.URL.createObjectURL(blob);
+                        var link = $("<a>").attr("target", "_blank").attr("href", url);
+                        link.get(0).click();
                     }
                 }, {
                     key: 'generateManufactoria',
@@ -2598,18 +2620,108 @@ System.register('loader', ['core', 'codeCell', 'tmath', 'program'], function (_e
     }
 
     function jsonToProgram(json) {
-        var p = new program.Program(parseInt(json.cols), parseInt(json.rows));
+        try {
+            var _ret = (function () {
+                var p = new program.Program(parseInt(json.cols), parseInt(json.rows));
 
-        json.cells.forEach(function (cell) {
-            p.setCell(cell.x, cell.y, cell.type, jsonToOrientation(cell.orientation));
-        });
+                json.cells.forEach(function (cell) {
+                    p.setCell(cell.x, cell.y, cell.type, jsonToOrientation(cell.orientation));
+                });
 
-        p.setStart(json.start.x, json.start.y, jsonToOrientation(json.end.orientation));
+                p.setStart(json.start.x, json.start.y, jsonToOrientation(json.end.orientation));
+                p.setEnd(json.end.x, json.end.y, jsonToOrientation(json.end.orientation));
 
-        p.setEnd(json.end.x, json.end.y, jsonToOrientation(json.end.orientation));
+                return {
+                    v: p
+                };
+            })();
 
-        return p;
+            if (typeof _ret === 'object') return _ret.v;
+        } catch (e) {
+            return null;
+        }
     }
+
+    function programToEsolang(p, extend) {
+        var out = "";
+
+        for (var y = 0; y < p.rows; y++) {
+            var line = "";
+            for (var x = 0; x < p.cols; x++) {
+                var cell = p.getCell(x, y);
+                if (cell.type == 'Empty') line += " ";
+                if (cell.type == 'Start') line += "@";
+                if (cell.type == 'End') line += ";";
+                if (cell.type == 'Conveyor') {
+                    if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'v';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += '>';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += '^';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += '<';
+                }
+                if (cell.type == 'CrossConveyor') {
+                    if (extend) {
+                        if (cell.orientation.equals(tmath.Mat2x2.kID)) line += ']';
+                        if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += '}';
+                        if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += '{';
+                        if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += '[';
+                    } else {
+                        line += '#';
+                    }
+                }
+                if (cell.type == 'BranchBR') {
+                    if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'J';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += 'L';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += 'K';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += 'H';
+                    if (cell.orientation.equals(tmath.Mat2x2.kMIR)) line += 'j';
+                    if (cell.orientation.equals(tmath.Mat2x2.kMROT1)) line += 'l';
+                    if (cell.orientation.equals(tmath.Mat2x2.kMROT2)) line += 'k';
+                    if (cell.orientation.equals(tmath.Mat2x2.kMROT3)) line += 'h';
+                }
+                if (cell.type == 'BranchGY') {
+                    if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'i';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += 'p';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += 'o';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += 'u';
+                    if (cell.orientation.equals(tmath.Mat2x2.kMIR)) line += 'I';
+                    if (cell.orientation.equals(tmath.Mat2x2.kMROT1)) line += 'P';
+                    if (cell.orientation.equals(tmath.Mat2x2.kMROT2)) line += 'O';
+                    if (cell.orientation.equals(tmath.Mat2x2.kMROT3)) line += 'U';
+                }
+                if (cell.type == 'WriteB') {
+                    if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'D';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += 'b';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += 'd';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += 'B';
+                }
+                if (cell.type == 'WriteR') {
+                    if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'C';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += 'r';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += 'c';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += 'R';
+                }
+                if (cell.type == 'WriteY') {
+                    if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'T';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += 'y';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += 't';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += 'Y';
+                }
+                if (cell.type == 'WriteG') {
+                    if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'Q';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += 'g';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += 'q';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += 'G';
+                }
+                console.log(x, y, cell);
+                console.log(line);
+            };
+            out += line + "\n";
+        };
+
+        return out;
+    }
+
+    function esolangToProgram(elang) {}
 
     function tapeToJson(t) {
         return t.symbols.reduce(function (prev, cur) {
@@ -2774,7 +2886,9 @@ System.register('loader', ['core', 'codeCell', 'tmath', 'program'], function (_e
                 fromJson: fromJson,
                 toJson: toJson,
                 programToJson: programToJson,
-                jsonToProgram: jsonToProgram
+                jsonToProgram: jsonToProgram,
+                programToEsolang: programToEsolang,
+                esolangToProgram: esolangToProgram
             });
         }
     };
