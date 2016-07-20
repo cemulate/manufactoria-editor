@@ -257,9 +257,8 @@ System.register('app', ['program', 'interpreter', 'graphics', 'view', 'tmath', '
                             var json = loader.programToJson(this.levelEditor.level.program);
                             var text = JSON.stringify(json);
                         }
-                        if ($("#other-format-select").val().startsWith("esolang")) {
-                            var extend = $("#other-format-select").val() == "esolang-extension";
-                            var text = loader.programToEsolang(this.levelEditor.level.program, extend);
+                        if ($("#other-format-select").val() == "esolang") {
+                            var text = loader.programToEsolang(this.levelEditor.level.program, true);
                         }
                         var blob = new Blob([text]);
                         var url = window.URL.createObjectURL(blob);
