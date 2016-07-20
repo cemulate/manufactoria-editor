@@ -164,20 +164,16 @@ class App {
         reader.onload = () => {
             var text = reader.result;
             if ($("#other-format-select").val() == "json") {
-                var prog = null;
-                var error = false;
-                try {
-                    prog = loader.jsonToProgram(JSON.parse(text));
-                } catch (e) {
-                    error = true;
-                }
+                var prog = loader.jsonToProgram(JSON.parse(text));
                 if (prog) {
                     this.levelEditor.setProgram(prog);
                     this.clearProgramGeneratedAndLoadStrings();
                 } else {
-                    error = true;
+                    alert("Error reading selected program file");
                 }
-                if (error) alert("Error reading selected program file");
+            }
+            if ($("#other-format-select").val().startsWith("esolang")) {
+                alert("Format not yet supported for loading");
             }
         }
 
@@ -198,19 +194,19 @@ class App {
     }
 
     generateOther() {
-        if (this.levelEditor.level.program != null) {
-            var json = loader.programToJson(this.levelEditor.level.program);
-            $('#json-form').find('input').val(JSON.stringify(json));
-        }
-
+        var text = null;
         if ($("#other-format-select").val() == "json") {
             var json = loader.programToJson(this.levelEditor.level.program);
             var text = JSON.stringify(json);
-            var blob = new Blob([text]);
-			var url = window.URL.createObjectURL(blob);
-            var link = $("<a>").attr("target", "_blank").attr("href", url);
-            link.get(0).click();
         }
+        if ($("#other-format-select").val().startsWith("esolang")) {
+            var extend = ($("#other-format-select").val() == "esolang-extension");
+            var text = loader.programToEsolang(this.levelEditor.level.program, extend);
+        }
+        var blob = new Blob([text]);
+        var url = window.URL.createObjectURL(blob);
+        var link = $("<a>").attr("target", "_blank").attr("href", url);
+        link.get(0).click();
     }
 
     generateManufactoria() {

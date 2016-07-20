@@ -108,3 +108,7 @@ If you would like the output tape from your test function and the output tape fr
 Anywhere outside the body of `testString`.
 This avoids problems with leading zeroes (`R` characters).
 If your manufactoria program returns the string `RRRB`, and your test function simply returns `B`, they will be compared as equal because they both represent the number `1`.
+
+## Exporting
+
+Explanations of export formats to be written.

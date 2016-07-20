@@ -247,39 +247,99 @@ function programToJson(p) {
 }
 
 function jsonToProgram(json) {
-    const p = new program.Program(parseInt(json.cols), parseInt(json.rows));
+    try {
+        const p = new program.Program(parseInt(json.cols), parseInt(json.rows));
 
-    json.cells.forEach(function(cell) {
-        p.setCell(cell.x, cell.y, cell.type, jsonToOrientation(cell.orientation));
-    });
+        json.cells.forEach(function(cell) {
+            p.setCell(cell.x, cell.y, cell.type, jsonToOrientation(cell.orientation));
+        });
 
-    p.setStart(
-        json.start.x,
-        json.start.y,
-        jsonToOrientation(json.end.orientation)
-    );
+        p.setStart( json.start.x, json.start.y, jsonToOrientation(json.end.orientation));
+        p.setEnd(json.end.x, json.end.y, jsonToOrientation(json.end.orientation));
 
-    p.setEnd(
-        json.end.x,
-        json.end.y,
-        jsonToOrientation(json.end.orientation)
-    );
-
-    return p;
-
+        return p;
+    } catch (e) {
+        return null;
+    }
 }
 
-function programToEsolang(p) {
+function programToEsolang(p, extend) {
     var out = "";
 
-    p.cells.forEach(function(column, x) {
+    for (var y = 0; y < p.rows; y ++) {
         var line = "";
-        column.forEach(function(cell, y) {
+        for (var x = 0; x < p.cols; x ++) {
+            var cell = p.getCell(x,y);
             if (cell.type == 'Empty') line += " ";
             if (cell.type == 'Start') line += "@";
             if (cell.type == 'End') line += ";";
-        });
-    });
+            if (cell.type == 'Conveyor') {
+                if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'v';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += '>';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += '^';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += '<';
+            }
+            if (cell.type == 'CrossConveyor') {
+                if (extend) {
+                    if (cell.orientation.equals(tmath.Mat2x2.kID)) line += ']';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += '}';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += '{';
+                    if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += '[';
+                } else {
+                    line += '#';
+                }
+            }
+            if (cell.type == 'BranchBR') {
+                if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'J';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += 'L';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += 'K';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += 'H';
+                if (cell.orientation.equals(tmath.Mat2x2.kMIR)) line += 'j';
+                if (cell.orientation.equals(tmath.Mat2x2.kMROT1)) line += 'l';
+                if (cell.orientation.equals(tmath.Mat2x2.kMROT2)) line += 'k';
+                if (cell.orientation.equals(tmath.Mat2x2.kMROT3)) line += 'h';
+            }
+            if (cell.type == 'BranchGY') {
+                if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'i';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += 'p';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += 'o';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += 'u';
+                if (cell.orientation.equals(tmath.Mat2x2.kMIR)) line += 'I';
+                if (cell.orientation.equals(tmath.Mat2x2.kMROT1)) line += 'P';
+                if (cell.orientation.equals(tmath.Mat2x2.kMROT2)) line += 'O';
+                if (cell.orientation.equals(tmath.Mat2x2.kMROT3)) line += 'U';
+            }
+            if (cell.type == 'WriteB') {
+                if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'D';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += 'b';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += 'd';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += 'B';
+            }
+            if (cell.type == 'WriteR') {
+                if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'C';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += 'r';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += 'c';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += 'R';
+            }
+            if (cell.type == 'WriteY') {
+                if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'T';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += 'y';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += 't';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += 'Y';
+            }
+            if (cell.type == 'WriteG') {
+                if (cell.orientation.equals(tmath.Mat2x2.kID)) line += 'Q';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT1)) line += 'g';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT2)) line += 'q';
+                if (cell.orientation.equals(tmath.Mat2x2.kROT3)) line += 'G';
+            }
+            console.log(x, y, cell);
+            console.log(line);
+        };
+        out += line + "\n";
+    };
+
+    return out;
 }
 
 function esolangToProgram(elang) {
@@ -440,5 +500,7 @@ export default {
     fromJson,
     toJson,
     programToJson,
-    jsonToProgram
+    jsonToProgram,
+    programToEsolang,
+    esolangToProgram
 };
